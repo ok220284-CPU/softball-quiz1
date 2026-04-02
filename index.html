@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>ソフトボール 上級クイズ 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Noto Sans JP','Hiragino Sans',sans-serif;
+  background:#0a0f1a;color:#e8ecf4;
+  min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;
+}
+button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
+
+/* === Background Blobs === */
+.bg-blob{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+.bg-blob–warm{top:-30%;right:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(255,140,50,.12) 0%,transparent 70%)}
+.bg-blob–cool{bottom:-20%;left:-15%;width:400px;height:400px;background:radial-gradient(circle,rgba(80,160,255,.08) 0%,transparent 70%)}
+
+/* === Layout === */
+.container{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:20px 16px;min-height:100vh;min-height:100dvh}
+.container–center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* === Start Screen === */
+.logo-circle{
+width:96px;height:96px;border-radius:50%;
+background:linear-gradient(145deg,#ff8c32,#e06010);
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 8px 32px rgba(255,140,50,.3);margin-bottom:24px;
+}
+.logo-circle span{font-size:48px}
+.title{
+font-size:32px;font-weight:800;letter-spacing:2px;
+background:linear-gradient(135deg,#ffa654,#ff6b2b);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+background-clip:text;color:transparent;
+}
+.subtitle{font-size:18px;font-weight:500;color:#8a94a8;letter-spacing:4px;margin-top:4px}
+.desc{text-align:center;color:#6b7590;font-size:14px;line-height:1.7;margin:28px 0 36px}
+.btn-start{
+background:linear-gradient(135deg,#ff8c32,#e05a10);color:#fff;
+border:none;border-radius:14px;padding:16px 48px;
+font-size:17px;font-weight:700;cursor:pointer;letter-spacing:2px;
+box-shadow:0 6px 24px rgba(255,100,30,.35);
+transition:transform .15s,box-shadow .15s;
+}
+.btn-start:active{transform:scale(.96)}
+
+/* === Progress === */
+.progress-bar{width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#ff8c32,#ffb86c);transition:width .4s ease}
+.header-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.q-num{font-size:13px;font-weight:600;color:#8a94a8}
+.score-label{font-size:14px;font-weight:700;color:#ffa654;display:flex;align-items:center;gap:6px}
+.streak-badge{font-size:12px;background:rgba(255,100,30,.15);border-radius:8px;padding:2px 8px}
+
+/* === Question Card === */
+.question-card{
+background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+border-radius:18px;padding:28px 20px;margin-bottom:24px;
+backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.question-text{font-size:16px;line-height:1.8;font-weight:500;color:#dce2f0}
+
+/* === Answer Buttons === */
+.btn-row{display:flex;gap:14px;margin-bottom:20px}
+.btn-ans{
+flex:1;border-radius:16px;padding:20px 12px;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;gap:6px;
+background:rgba(255,255,255,.03);color:#e8ecf4;
+transition:all .2s ease;
+}
+.btn-ans[disabled]{cursor:default}
+.btn-ans–maru{border:2px solid rgba(80,200,120,.25)}
+.btn-ans–batsu{border:2px solid rgba(255,80,80,.25)}
+.btn-ans .symbol{font-size:36px;font-weight:800}
+.btn-ans .label{font-size:13px;font-weight:600;color:#8a94a8}
+.btn-ans–correct{background:rgba(80,200,120,.15)!important;border-color:#50c878!important;box-shadow:0 4px 20px rgba(80,200,120,.2)}
+.btn-ans–wrong{background:rgba(255,80,80,.15)!important;border-color:#ff5050!important;box-shadow:0 4px 20px rgba(255,80,80,.2)}
+.btn-ans–dim{opacity:.35}
+
+/* === Feedback === */
+.feedback{border-radius:16px;padding:20px;margin-top:4px;animation:slideUp .3s ease}
+.feedback–correct{background:rgba(80,200,120,.08);border:1px solid rgba(80,200,120,.15)}
+.feedback–wrong{background:rgba(255,80,80,.08);border:1px solid rgba(255,80,80,.15)}
+.feedback-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.feedback-icon{font-size:20px}
+.feedback-title{font-size:16px;font-weight:700}
+.hint-text{font-size:14px;line-height:1.7;color:#9aa4b8;margin:0 0 16px}
+.btn-next{
+width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);
+border-radius:12px;padding:14px;color:#e8ecf4;font-size:15px;font-weight:600;cursor:pointer;
+transition:background .15s;
+}
+.btn-next:active{background:rgba(255,255,255,.14)}
+
+/* === Result === */
+.result-emoji{font-size:56px;margin-bottom:12px}
+.result-grade{font-size:26px;font-weight:800;color:#ffa654;margin-bottom:16px}
+.score-circle{
+width:120px;height:120px;border-radius:50%;
+border:3px solid rgba(255,140,50,.3);background:rgba(255,140,50,.05);
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+margin-bottom:16px;
+}
+.score-num{font-size:42px;font-weight:800;color:#ffa654;line-height:1}
+.score-denom{font-size:14px;color:#8a94a8;font-weight:600}
+.result-msg{font-size:15px;color:#8a94a8;text-align:center;margin-bottom:8px}
+.result-streak{font-size:14px;color:#ffb86c;margin-bottom:20px}
+.review-wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px}
+.review-item{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600}
+.review-item–ok{background:rgba(80,200,120,.1);color:#50c878}
+.review-item–ng{background:rgba(255,80,80,.1);color:#ff5050}
+
+/* === Transitions === */
+.fade-enter{opacity:1;transition:opacity .2s ease}
+.fade-exit{opacity:0;transition:opacity .2s ease}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* === Hidden utility === */
+.hidden{display:none!important}
+</style>
+
+</head>
+<body>
+
+<div class="bg-blob bg-blob--warm"></div>
+<div class="bg-blob bg-blob--cool"></div>
+
+<!-- ======= START SCREEN ======= -->
+
+<div id="screen-start" class="container container--center">
+  <div class="logo-circle"><span>🥎</span></div>
+  <h1 class="title">ソフトボール</h1>
+  <h2 class="subtitle">上級クイズ 3</h2>
+  <p class="desc">○×形式 ・ 全10問<br>上級者向けのルール・知識問題</p>
+  <button class="btn-start" id="btn-start">スタート</button>
+</div>
+
+<!-- ======= QUIZ SCREEN ======= -->
+
+<div id="screen-quiz" class="container hidden">
+  <div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="header-info">
+      <span class="q-num" id="q-num"></span>
+      <span class="score-label" id="score-label"></span>
+    </div>
+  </div>
+  <div class="question-card">
+    <p class="question-text" id="question-text"></p>
+  </div>
+  <div class="btn-row">
+    <button class="btn-ans btn-ans--maru" id="btn-maru" onclick="handleAnswer(true)">
+      <span class="symbol">○</span><span class="label">正しい</span>
+    </button>
+    <button class="btn-ans btn-ans--batsu" id="btn-batsu" onclick="handleAnswer(false)">
+      <span class="symbol">✕</span><span class="label">誤り</span>
+    </button>
+  </div>
+  <div id="feedback" class="feedback hidden">
+    <div class="feedback-header">
+      <span class="feedback-icon" id="fb-icon"></span>
+      <span class="feedback-title" id="fb-title"></span>
+    </div>
+    <p class="hint-text" id="fb-hint"></p>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+</div>
+
+<!-- ======= RESULT SCREEN ======= -->
+
+<div id="screen-result" class="container container--center hidden">
+  <span class="result-emoji" id="res-emoji"></span>
+  <h2 class="result-grade" id="res-grade"></h2>
+  <div class="score-circle">
+    <span class="score-num" id="res-score"></span>
+    <span class="score-denom" id="res-denom"></span>
+  </div>
+  <p class="result-msg" id="res-msg"></p>
+  <p class="result-streak hidden" id="res-streak"></p>
+  <div class="review-wrap" id="review-wrap"></div>
+  <button class="btn-start" onclick="startQuiz()">もう一度挑戦</button>
+</div>
+
+<script>
+// ===== QUESTIONS =====
+const QUESTIONS = [
+  { q: "インフィールドフライが宣告された場合、ランナーはリタッチせずに進塁できる。", a: false, hint: "インフィールドフライでもフライのルールが適用され、リタッチ義務があります。" },
+  { q: "DP（指名選手）とFLEX（守備専門選手）は試合中に役割を入れ替えることができる。", a: true, hint: "ISF公式ルールではDP/FLEXの入れ替えが認められています。" },
+  { q: "ソフトボールでは、投手はセットポジションから両手を離した後、再度合わせてから投球してもよい。", a: false, hint: "両手を離した時点で投球動作の開始とみなされ、再度合わせることは不正投球です。" },
+  { q: "タイブレーカー制では、前のイニングの最終打者がランナーとして二塁に置かれる。", a: true, hint: "国際ルールでは前イニング最後の打者が二塁走者として出発します。" },
+  { q: "ソフトボールの投手板から本塁までの距離は、男子と女子で同じである。", a: false, hint: "男子は14.02m（46フィート）、女子は13.11m（43フィート）です。" },
+  { q: "打者がバントの構えをしたが、バットを引いた場合、ストライクが宣告される。", a: false, hint: "バントの構えを引いた場合はストライクにはなりません。ボールゾーンならボールです。" },
+  { q: "ソフトボールでは、振り逃げは第3ストライクが正規に捕球されなかった場合に発生するが、一塁にランナーがいる場合は2アウト時のみ適用される。", a: true, hint: "0アウト・1アウトで一塁にランナーがいる場合は振り逃げ不可、2アウト時のみ可能です。" },
+  { q: "不正投球が宣告された場合、打者には自動的にボールが1つ加算される。", a: true, hint: "不正投球ではボールが1つカウントされ、ランナーがいれば1つ進塁します。" },
+  { q: "ソフトボールの公式球の周囲は、野球のボールよりも大きい。", a: true, hint: "ソフトボールは約30.5cm、野球は約23cmで、ソフトボールの方が大きいです。" },
+  { q: "リリースされた投球がストライクゾーンを通過していれば、投球フォームが不正でもストライクである。", a: false, hint: "不正投球が宣告された場合、球がストライクゾーンを通過してもボールとなります。" },
+  { q: "ソフトボールのルールでは、守備側がアピールプレイを行う前にタイムが宣告された場合、アピール権は消滅する。", a: false, hint: "タイム後もアピールプレイは可能です。次のプレイ開始まで有効です。" },
+  { q: "走者が故意に打球に触れた場合、走者はアウトになり、ボールデッドとなる。", a: true, hint: "故意に打球に触れた走者はアウト、ボールデッドで他の走者は元の塁に戻ります。" },
+  { q: "ソフトボールでは、投手が投球動作に入った後にステップオフ（プレートを外す）することが認められている。", a: false, hint: "投球動作開始後のステップオフは不正投球となります。" },
+  { q: "ソフトボールの国際大会では、7イニング制が標準である。", a: true, hint: "ソフトボールは7イニング制が公式ルールです。" },
+  { q: "打者走者が一塁をオーバーランした際、二塁に向かう意思を示していなければ、フェアゾーン側に戻ってもタッグアウトにならない。", a: false, hint: "一塁オーバーランの特例はファウルゾーン側に戻る場合のみ適用され、フェア側に出れば意思に関係なくタッグ対象です。" },
+  { q: "ソフトボールでは、投手はウインドミル投法以外にスリングショット投法も公式に認められている。", a: true, hint: "ウインドミルとスリングショットの両方がISFルールで認められた投球フォームです。" },
+  { q: "ファウルボールが直接キャッチャーのマスクに挟まった場合、ボールデッドとなりランナーは1つ進塁できる。", a: true, hint: "用具に挟まった場合はボールデッドとなり、ランナーには1個の安全進塁権が与えられます。" },
+  { q: "ソフトボールでは、投手の投球間隔に時間制限はない。", a: false, hint: "投手はボールを受け取ってから一定時間以内（通常10秒以内）に投球しなければなりません。" },
+  { q: "フェアボールが走者に当たった場合、その走者は常にアウトになる。", a: false, hint: "内野手を通過した後のフェアボールが走者に当たった場合はアウトにならないケースがあります。" },
+  { q: "ソフトボールでは、コリジョンルール（衝突防止ルール）が国際大会で採用されている。", a: true, hint: "走者と守備者の危険な衝突を防ぐため、コリジョンルールが適用されています。" },
+  { q: "ソフトボールの塁間距離は、男子・女子ともに18.29m（60フィート）である。", a: true, hint: "塁間距離は男女共通で18.29m（60フィート）です。" },
+  { q: "三塁走者がスクイズプレイ中にホームスチールを試み、打者がバントを空振りした場合、走者はアウトにならずに三塁に戻れる。", a: false, hint: "ボールがキャッチャーに捕球されれば、走者はタッグアウトの対象となります。" },
+  { q: "ソフトボールでは、打者が打席中にバッターボックスの線を完全に踏み越えて打った場合、アウトとなる。", a: true, hint: "打者はバッターボックス内で打つ必要があり、完全に踏み越えた場合はアウトです。" },
+  { q: "故意四球（敬遠）は、投手が実際に4球投げなくてもベンチからの申告で成立する。", a: true, hint: "申告敬遠が導入されており、監督の申告により投球なしで四球が成立します。" },
+  { q: "ソフトボールでは、打順を誤った場合、守備側のアピールがなければそのまま試合は続行される。", a: true, hint: "打順間違いはアピールプレイのため、守備側が気づいてアピールしなければ有効です。" },
+  { q: "犠牲フライでタッチアップする走者は、野手がボールに最初に触れた時点で離塁できる。", a: true, hint: "リタッチのタイミングは野手の捕球完了ではなく、最初に触れた時点が基準です。" },
+  { q: "ソフトボールでは、雨天コールドゲームは5イニング完了で成立する。", a: false, hint: "正式試合の成立条件は通常4イニング（後攻リードの場合3回半）完了です。" },
+  { q: "ソフトボールの投手がリープ（跳躍投球）をした場合、不正投球となる。", a: true, hint: "投手は投球時に軸足を地面から離してはならず、リープは不正投球です。" },
+  { q: "隠し球（ヒドゥンボールトリック）は、ソフトボールの公式ルールで禁止されている。", a: false, hint: "隠し球は禁止されていませんが、投手がプレートに触れている間は投球と見なされるため注意が必要です。" },
+  { q: "ソフトボールでは、同一イニングで一度交代した選手が再び出場することができる。", a: true, hint: "リエントリー（再出場）ルールにより、スターティングメンバーは一度だけ再出場可能です。" },
+];
+
+// ===== STATE =====
+const TOTAL_Q = 10;
+let questions = [];
+let idx = 0;
+let score = 0;
+let selected = null;
+let history = [];
+let streak = 0;
+let bestStreak = 0;
+
+// ===== UTILITIES =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function $(id) { return document.getElementById(id); }
+
+function showScreen(name) {
+  ['screen-start', 'screen-quiz', 'screen-result'].forEach(s => {
+    $(s).classList.toggle('hidden', s !== 'screen-' + name);
+  });
+}
+
+// ===== QUIZ LOGIC =====
+function startQuiz() {
+  questions = shuffle(QUESTIONS).slice(0, TOTAL_Q);
+  idx = 0; score = 0; selected = null;
+  history = []; streak = 0; bestStreak = 0;
+  showScreen('quiz');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = questions[idx];
+  $('progress-fill').style.width = ((idx + 1) / TOTAL_Q * 100) + '%';
+  $('q-num').textContent = 'Q' + (idx + 1) + '/' + TOTAL_Q;
+
+  let scoreHTML = score + '点';
+  if (streak >= 2) scoreHTML += ' <span class="streak-badge">🔥' + streak + '連続</span>';
+  $('score-label').innerHTML = scoreHTML;
+
+  $('question-text').textContent = q.q;
+
+  // Reset buttons
+  const btnM = $('btn-maru'), btnB = $('btn-batsu');
+  btnM.disabled = false; btnB.disabled = false;
+  btnM.className = 'btn-ans btn-ans--maru';
+  btnB.className = 'btn-ans btn-ans--batsu';
+
+  // Hide feedback
+  $('feedback').classList.add('hidden');
+  selected = null;
+
+  // Fade in
+  $('screen-quiz').classList.remove('fade-exit');
+  $('screen-quiz').classList.add('fade-enter');
+}
+
+function handleAnswer(ans) {
+  if (selected !== null) return;
+  selected = ans;
+  const q = questions[idx];
+  const correct = ans === q.a;
+
+  if (correct) { score++; streak++; } else { streak = 0; }
+  if (streak > bestStreak) bestStreak = streak;
+  history.push({ correct });
+
+  // Update score display
+  let scoreHTML = score + '点';
+  if (streak >= 2) scoreHTML += ' <span class="streak-badge">🔥' + streak + '連続</span>';
+  $('score-label').innerHTML = scoreHTML;
+
+  // Highlight buttons
+  const btnM = $('btn-maru'), btnB = $('btn-batsu');
+  btnM.disabled = true; btnB.disabled = true;
+
+  if (q.a === true) btnM.classList.add('btn-ans--correct');
+  else btnB.classList.add('btn-ans--correct');
+
+  if (!correct) {
+    if (ans === true) btnM.classList.add('btn-ans--wrong');
+    else btnB.classList.add('btn-ans--wrong');
+  }
+
+  // Dim non-answer
+  if (q.a === true) btnB.classList.add('btn-ans--dim');
+  else btnM.classList.add('btn-ans--dim');
+
+  // Show feedback
+  const fb = $('feedback');
+  fb.classList.remove('hidden', 'feedback--correct', 'feedback--wrong');
+  fb.classList.add(correct ? 'feedback--correct' : 'feedback--wrong');
+  $('fb-icon').textContent = correct ? '✅' : '❌';
+  $('fb-title').textContent = correct ? '正解！' : '不正解…';
+  $('fb-hint').textContent = q.hint;
+  $('btn-next').textContent = (idx + 1 >= TOTAL_Q) ? '結果を見る' : '次の問題へ →';
+}
+
+function nextQuestion() {
+  if (idx + 1 >= TOTAL_Q) {
+    showResult();
+  } else {
+    $('screen-quiz').classList.add('fade-exit');
+    $('screen-quiz').classList.remove('fade-enter');
+    setTimeout(() => { idx++; renderQuestion(); }, 200);
+  }
+}
+
+function showResult() {
+  showScreen('result');
+
+  let grade;
+  if (score === TOTAL_Q) grade = { label: '完璧！', emoji: '🏆', msg: 'ソフトボール博士！全問正解は見事です！' };
+  else if (score >= 8) grade = { label: '素晴らしい！', emoji: '🥇', msg: 'かなりの知識量ですね！' };
+  else if (score >= 6) grade = { label: 'なかなか！', emoji: '🥈', msg: '上級者として十分な実力です。' };
+  else if (score >= 4) grade = { label: 'まずまず', emoji: '🥉', msg: 'もう少し勉強してみましょう！' };
+  else grade = { label: '要復習', emoji: '📖', msg: 'ルールブックを読み直してリベンジ！' };
+
+  $('res-emoji').textContent = grade.emoji;
+  $('res-grade').textContent = grade.label;
+  $('res-score').textContent = score;
+  $('res-denom').textContent = '/ ' + TOTAL_Q;
+  $('res-msg').textContent = grade.msg;
+
+  const streakEl = $('res-streak');
+  if (bestStreak >= 2) {
+    streakEl.textContent = '最大連続正解: 🔥' + bestStreak;
+    streakEl.classList.remove('hidden');
+  } else {
+    streakEl.classList.add('hidden');
+  }
+
+  // Review items
+  const wrap = $('review-wrap');
+  wrap.innerHTML = '';
+  history.forEach((h, i) => {
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (h.correct ? 'review-item--ok' : 'review-item--ng');
+    div.innerHTML = '<span>' + (h.correct ? '✅' : '❌') + '</span><span>Q' + (i + 1) + '</span>';
+    wrap.appendChild(div);
+  });
+}
+
+// ===== INIT =====
+$('btn-start').addEventListener('click', startQuiz);
+</script>
+
+</body>
+</html>
