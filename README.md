@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>ソフトボール上級○×クイズ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600;700;900&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+–bg: #f5f0ea;
+–card: #ffffff;
+–text: #1a1a1a;
+–text-sub: #3a3a3a;
+–text-light: #888;
+–green: #50c878;
+–green-bg: #e8f8ef;
+–red: #e85050;
+–red-bg: #fde8e8;
+–accent: #ff8c32;
+–accent-dark: #d45a10;
+–shadow: 0 2px 12px rgba(0,0,0,0.08);
+–radius: 16px;
+}
+
+html, body {
+font-family: ‘Noto Sans JP’, sans-serif;
+background: var(–bg);
+color: var(–text);
+min-height: 100dvh;
+-webkit-tap-highlight-color: transparent;
+overflow-x: hidden;
+}
+
+/* ===== SCREEN CONTAINERS ===== */
+.screen { display: none; min-height: 100dvh; padding: 20px 16px; }
+.screen.active { display: flex; flex-direction: column; }
+
+/* ===== START SCREEN ===== */
+#start-screen {
+justify-content: center;
+align-items: center;
+gap: 28px;
+text-align: center;
+}
+
+.logo-icon {
+width: 80px; height: 80px;
+background: linear-gradient(135deg, var(–accent), var(–accent-dark));
+border-radius: 24px;
+display: flex; align-items: center; justify-content: center;
+font-size: 40px;
+box-shadow: 0 8px 24px rgba(255,140,50,0.3);
+}
+
+.app-title {
+font-family: ‘Outfit’, ‘Noto Sans JP’, sans-serif;
+font-size: 22px;
+font-weight: 900;
+letter-spacing: -0.5px;
+line-height: 1.3;
+}
+
+.app-title span {
+display: block;
+font-size: 13px;
+font-weight: 600;
+color: var(–accent-dark);
+letter-spacing: 2px;
+margin-top: 4px;
+}
+
+.start-info {
+font-size: 14px;
+color: var(–text-sub);
+line-height: 1.7;
+}
+
+.btn-start {
+width: 100%;
+max-width: 300px;
+padding: 18px;
+border: none;
+border-radius: var(–radius);
+background: linear-gradient(135deg, var(–accent), var(–accent-dark));
+color: #fff;
+font-size: 18px;
+font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+box-shadow: 0 6px 20px rgba(255,140,50,0.35);
+transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-start:active {
+transform: scale(0.97);
+box-shadow: 0 3px 10px rgba(255,140,50,0.25);
+}
+
+/* ===== QUIZ SCREEN ===== */
+#quiz-screen {
+gap: 16px;
+padding-bottom: 32px;
+}
+
+.progress-area {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.progress-bar-track {
+flex: 1;
+height: 8px;
+background: #e0dbd4;
+border-radius: 4px;
+overflow: hidden;
+}
+
+.progress-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(–accent), var(–accent-dark));
+border-radius: 4px;
+transition: width 0.4s ease;
+}
+
+.progress-text {
+font-family: ‘Outfit’, sans-serif;
+font-size: 14px;
+font-weight: 700;
+color: var(–text-sub);
+white-space: nowrap;
+}
+
+.score-bar {
+display: flex;
+justify-content: center;
+gap: 20px;
+font-size: 13px;
+font-weight: 600;
+color: var(–text-sub);
+}
+
+.score-bar .correct { color: var(–green); }
+.score-bar .wrong { color: var(–red); }
+
+.question-card {
+background: var(–card);
+border-radius: var(–radius);
+padding: 24px 20px;
+box-shadow: var(–shadow);
+min-height: 120px;
+display: flex;
+align-items: center;
+}
+
+.question-card p {
+font-size: 16px;
+font-weight: 600;
+line-height: 1.75;
+color: var(–text);
+}
+
+.answer-buttons {
+display: flex;
+gap: 14px;
+}
+
+.btn-answer {
+flex: 1;
+padding: 20px;
+border: 3px solid;
+border-radius: var(–radius);
+background: var(–card);
+font-size: 32px;
+font-weight: 900;
+font-family: inherit;
+cursor: pointer;
+transition: transform 0.12s, background 0.2s;
+box-shadow: var(–shadow);
+}
+.btn-answer:active { transform: scale(0.95); }
+
+.btn-o { border-color: var(–green); color: var(–green); }
+.btn-x { border-color: var(–red); color: var(–red); }
+
+.btn-answer.correct-selected { background: var(–green); color: #fff; border-color: var(–green); }
+.btn-answer.wrong-selected { background: var(–red); color: #fff; border-color: var(–red); }
+.btn-answer.disabled { opacity: 0.4; pointer-events: none; }
+
+.result-box {
+display: none;
+border-radius: var(–radius);
+padding: 20px;
+animation: fadeSlideUp 0.3s ease;
+}
+
+.result-box.show { display: block; }
+
+.result-box.correct-result {
+background: var(–green-bg);
+border-left: 4px solid var(–green);
+}
+
+.result-box.wrong-result {
+background: var(–red-bg);
+border-left: 4px solid var(–red);
+}
+
+.result-label {
+font-size: 16px;
+font-weight: 900;
+margin-bottom: 8px;
+}
+
+.result-box.correct-result .result-label { color: var(–green); }
+.result-box.wrong-result .result-label { color: var(–red); }
+
+.result-box .explanation {
+font-size: 14px;
+color: var(–text-sub);
+line-height: 1.7;
+}
+
+.btn-next {
+width: 100%;
+padding: 16px;
+border: none;
+border-radius: var(–radius);
+background: var(–text);
+color: #fff;
+font-size: 16px;
+font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+display: none;
+transition: transform 0.12s;
+}
+.btn-next.show { display: block; }
+.btn-next:active { transform: scale(0.97); }
+
+/* ===== RESULT SCREEN ===== */
+#result-screen {
+justify-content: center;
+align-items: center;
+gap: 24px;
+text-align: center;
+}
+
+.result-circle {
+width: 160px; height: 160px;
+border-radius: 50%;
+display: flex; flex-direction: column;
+align-items: center; justify-content: center;
+box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+.result-circle.rank-s { background: linear-gradient(135deg, #ffd700, #ffaa00); }
+.result-circle.rank-a { background: linear-gradient(135deg, var(–accent), var(–accent-dark)); }
+.result-circle.rank-b { background: linear-gradient(135deg, var(–green), #2e9e5a); }
+.result-circle.rank-c { background: linear-gradient(135deg, #6eb5ff, #3a7bd5); }
+.result-circle.rank-d { background: linear-gradient(135deg, #bbb, #888); }
+
+.result-circle .score-num {
+font-family: ‘Outfit’, sans-serif;
+font-size: 48px;
+font-weight: 900;
+color: #fff;
+line-height: 1;
+}
+
+.result-circle .score-label {
+font-size: 14px;
+font-weight: 700;
+color: rgba(255,255,255,0.85);
+margin-top: 4px;
+}
+
+.result-rank {
+font-size: 20px;
+font-weight: 900;
+}
+
+.result-comment {
+font-size: 14px;
+color: var(–text-sub);
+line-height: 1.7;
+padding: 0 8px;
+}
+
+.result-actions {
+display: flex;
+flex-direction: column;
+gap: 12px;
+width: 100%;
+max-width: 300px;
+}
+
+.btn-retry {
+width: 100%;
+padding: 16px;
+border: none;
+border-radius: var(–radius);
+background: linear-gradient(135deg, var(–accent), var(–accent-dark));
+color: #fff;
+font-size: 16px;
+font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+box-shadow: 0 6px 20px rgba(255,140,50,0.35);
+}
+.btn-retry:active { transform: scale(0.97); }
+
+.btn-review {
+width: 100%;
+padding: 16px;
+border: 2px solid var(–text);
+border-radius: var(–radius);
+background: transparent;
+color: var(–text);
+font-size: 16px;
+font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+}
+.btn-review:active { transform: scale(0.97); }
+
+/* ===== REVIEW SCREEN ===== */
+#review-screen {
+gap: 16px;
+padding-bottom: 40px;
+}
+
+.review-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.review-title {
+font-size: 18px;
+font-weight: 900;
+}
+
+.review-filter {
+display: flex;
+gap: 8px;
+}
+
+.filter-btn {
+padding: 6px 14px;
+border: 2px solid #ddd;
+border-radius: 20px;
+background: transparent;
+font-size: 12px;
+font-weight: 700;
+font-family: inherit;
+color: var(–text-sub);
+cursor: pointer;
+}
+.filter-btn.active {
+border-color: var(–accent);
+color: var(–accent-dark);
+background: rgba(255,140,50,0.08);
+}
+
+.review-list { display: flex; flex-direction: column; gap: 12px; }
+
+.review-item {
+background: var(–card);
+border-radius: 12px;
+padding: 16px;
+box-shadow: var(–shadow);
+border-left: 4px solid;
+}
+
+.review-item.was-correct { border-left-color: var(–green); }
+.review-item.was-wrong { border-left-color: var(–red); }
+
+.review-item .ri-q {
+font-size: 14px;
+font-weight: 600;
+line-height: 1.6;
+margin-bottom: 8px;
+}
+
+.review-item .ri-a {
+font-size: 12px;
+font-weight: 700;
+margin-bottom: 6px;
+}
+
+.review-item.was-correct .ri-a { color: var(–green); }
+.review-item.was-wrong .ri-a { color: var(–red); }
+
+.review-item .ri-exp {
+font-size: 13px;
+color: var(–text-sub);
+line-height: 1.6;
+}
+
+.btn-back-top {
+width: 100%;
+padding: 16px;
+border: none;
+border-radius: var(–radius);
+background: var(–text);
+color: #fff;
+font-size: 16px;
+font-weight: 700;
+font-family: inherit;
+cursor: pointer;
+margin-top: 8px;
+}
+.btn-back-top:active { transform: scale(0.97); }
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeSlideUp {
+from { opacity: 0; transform: translateY(12px); }
+to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in { animation: fadeSlideUp 0.35s ease; }
+</style>
+
+</head>
+<body>
+
+<!-- ===== START ===== -->
+
+<div id="start-screen" class="screen active">
+  <div class="logo-icon">🥎</div>
+  <div class="app-title">
+    ソフトボール上級<br>○×クイズ
+    <span>ADVANCED QUIZ - 100問</span>
+  </div>
+  <p class="start-info">
+    上級ルール・グラウンド寸法・<br>
+    ルール改正・歴史まで幅広く出題！<br>
+    全100問からランダム20問に挑戦
+  </p>
+  <button class="btn-start" onclick="startQuiz()">スタート</button>
+</div>
+
+<!-- ===== QUIZ ===== -->
+
+<div id="quiz-screen" class="screen">
+  <div class="progress-area">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" id="progressFill"></div>
+    </div>
+    <span class="progress-text" id="progressText">1 / 20</span>
+  </div>
+  <div class="score-bar">
+    <span>⭕ 正解: <span class="correct" id="correctCount">0</span></span>
+    <span>❌ 不正解: <span class="wrong" id="wrongCount">0</span></span>
+  </div>
+  <div class="question-card fade-in" id="questionCard">
+    <p id="questionText"></p>
+  </div>
+  <div class="answer-buttons">
+    <button class="btn-answer btn-o" id="btnO" onclick="submitAnswer(true)">○</button>
+    <button class="btn-answer btn-x" id="btnX" onclick="submitAnswer(false)">×</button>
+  </div>
+  <div class="result-box" id="resultBox">
+    <div class="result-label" id="resultLabel"></div>
+    <div class="explanation" id="explanation"></div>
+  </div>
+  <button class="btn-next" id="btnNext" onclick="nextQuestion()">次の問題 →</button>
+</div>
+
+<!-- ===== RESULT ===== -->
+
+<div id="result-screen" class="screen">
+  <div class="result-circle" id="resultCircle">
+    <span class="score-num" id="finalScore">0</span>
+    <span class="score-label">/ 20 正解</span>
+  </div>
+  <div class="result-rank" id="resultRank"></div>
+  <p class="result-comment" id="resultComment"></p>
+  <div class="result-actions">
+    <button class="btn-retry" onclick="startQuiz()">もう一度挑戦</button>
+    <button class="btn-review" onclick="showReview()">間違えた問題を確認</button>
+  </div>
+</div>
+
+<!-- ===== REVIEW ===== -->
+
+<div id="review-screen" class="screen">
+  <div class="review-header">
+    <span class="review-title">結果一覧</span>
+    <div class="review-filter">
+      <button class="filter-btn active" data-filter="wrong" onclick="setFilter('wrong',this)">間違いのみ</button>
+      <button class="filter-btn" data-filter="all" onclick="setFilter('all',this)">全問</button>
+    </div>
+  </div>
+  <div class="review-list" id="reviewList"></div>
+  <button class="btn-back-top" onclick="showScreen('start-screen')">トップへ戻る</button>
+</div>
+
+<script>
+// ===== 問題データ（100問） =====
+const ALL_QUESTIONS = [
+  // === 投手ルール（12問） ===
+  {q:"投手は投球時に軸足（ピッチャープレートに触れている足）を前方に踏み出してから投球しなければならない",a:true,e:"投手はプレートに軸足を触れた状態から、自由足を前方に1歩踏み出して投球します。2018年の改正で自由足の位置に関する制限が緩和されました。"},
+  {q:"投手がセットポジションに入った後、ボールを持った手をグラブから離しただけで投球動作開始とみなされる",a:false,e:"グラブから手を離しただけでは投球動作開始とはなりません。腕の振り（ウィンドミルやスリングショットの動作開始）が投球動作の開始です。"},
+  {q:"投手は1イニングに同じ打者に対して2回以上投球をやり直すこと（ステップオフ）ができない",a:false,e:"ステップオフの回数に制限はありません。投手はプレートを外せば何度でもやり直しが可能です。"},
+  {q:"リープ（跳躍投球）とは、投球時に軸足が完全にプレートから離れ、体が空中に浮いた状態で投球することをいう",a:true,e:"リープは軸足がプレートから離れて体が宙に浮く反則投球です。ただし2012年の改正でツーステップ（2歩踏み出し）投法は合法となり、従来リープとされていた投法の一部が認められるようになりました。"},
+  {q:"投手が投球動作中にボールを落とした場合、走者がいればボークとなる",a:false,e:"ソフトボールにはボークの概念がありません。投球動作中にボールを落とした場合は「不正投球（イリーガルピッチ）」となり、ボール1つが宣告され、走者は1つ進塁します。"},
+  {q:"投手が故意にボールに唾液や異物をつけた場合、警告なしに即退場となる",a:false,e:"初回は警告が与えられ、2回目以降に退場処分となります。ただし、状況が悪質な場合は審判の判断で即退場もあり得ます。"},
+  {q:"不正投球（イリーガルピッチ）が宣告された場合、打者にはボールが1つ加算される",a:true,e:"不正投球が宣告されると、打者にボールが1つ加算されます。走者がいる場合は各走者に1つの安全進塁権が与えられます。"},
+  {q:"投手が投球する際、グラブの色はボールと同色（黄色）でも問題ない",a:false,e:"グラブの色がボールと紛らわしい色（黄色や蛍光色など）の場合、審判から使用を禁じられることがあります。投手のグラブには色の制限があります。"},
+  {q:"投手は投球前にサイン交換のためにキャッチャーを見る際、片足はプレートに触れていなければならない",a:true,e:"投手はサインを見る段階からプレートに触れている必要があります。プレートから離れた状態でサインを見ることは認められていません。"},
+  {q:"投手が正規の投球をする前に、走者を牽制するためにプレートから足を外して送球することは許される",a:true,e:"プレートを外してからの牽制は合法です。ただし、プレートに触れたまま塁に送球するとイリーガルピッチになります。"},
+  {q:"ソフトボールでは投手がウィンドミル投法で投げる際、腕は体の横で1回転以上させてはならない",a:true,e:"ウィンドミル投法では腕の回転は1回転までです。1回転を超える回転は不正投球となります。"},
+  {q:"2020年の改正で、ソフトボールにも申告敬遠（故意四球の申告制）が導入された",a:true,e:"2020年の改正で申告敬遠が導入されました。監督が審判に申告するだけで故意四球が成立し、投球の必要がなくなりました。"},
+  // === 打者ルール（12問） ===
+  {q:"打者がバッターボックスの線を踏んだ状態で打った場合、反則打球となりアウトになる",a:false,e:"バッターボックスの線は「ボックスの一部」です。線を踏んでいるだけではアウトになりません。ボックスの外に完全に足が出た状態で打った場合に反則打球となります。"},
+  {q:"打者が三振した際、キャッチャーが捕球できなかった場合（振り逃げ）、一塁にランナーがいてもアウトカウントに関係なく走塁できる",a:false,e:"振り逃げは、無死または一死で一塁にランナーがいる場合は成立しません。二死の場合は一塁にランナーがいても振り逃げが成立します。"},
+  {q:"バントの構えをしてからバットを引いた場合、ストライクゾーンを通過した投球はストライクと判定される",a:false,e:"バントの構えをしてもバットを引けば、通常のストライク判定が適用されます。バントの構えだけではストライクにはなりません。"},
+  {q:"打球がフェア地域でバウンドして一塁ベースの上を通過した場合、その打球はフェアボールである",a:true,e:"一塁（または三塁）ベースの上空をバウンドで通過した打球は、その時点でフェアです。ベースはフェア地域にあるため、ベース上の空間もフェアとなります。"},
+  {q:"ツーストライク後のファウルボールはアウトにならないが、ツーストライク後のファウルバントはアウトになる",a:true,e:"通常のファウルはツーストライク後でもアウトになりませんが、ファウルバントは三振扱いとなりアウトです。これは野球と同じルールです。"},
+  {q:"打球がワンバウンドして外野フェンスを越えた場合、エンタイトルツーベース（ブックルールではアウォーデッドベース）となる",a:true,e:"打球がワンバウンドで外野フェンスを越えた場合は、エンタイトルツーベース（2個の安全進塁権）が与えられます。"},
+  {q:"打者が打撃中にバットを投げてしまい、それがフェア地域に転がった場合、その打者は自動的にアウトになる",a:false,e:"バットを投げたこと自体ではアウトにはなりません。ただし、投げたバットが走者や打球に当たった場合は守備妨害となる可能性があります。審判から警告を受けることもあります。"},
+  {q:"ソフトボールでは打者が投球を避けようとしなかった場合、死球（デッドボール）が認められないことがある",a:true,e:"打者が避けようとする動作をしなかった場合、審判は死球を認めずボールを宣告することができます。避ける努力は打者の義務とされています。"},
+  {q:"打席の途中で打順の誤りが発見された場合、正しい打者に交代してカウントを引き継ぐ",a:true,e:"打席途中で打順間違いが指摘された場合は、正しい打者がその時点のカウントを引き継いで打席に入ります。"},
+  {q:"犠牲フライは、フェアフライだけでなくファウルフライでも成立する",a:true,e:"犠牲フライはフェア・ファウルを問わず、野手がフライを捕球した後に走者がタッグアップして得点した場合に記録されます。"},
+  {q:"ソフトボールの公式球が黄色になったのは2002年からである",a:true,e:"2002年にISF（国際ソフトボール連盟）が公式球を黄色（オプティックイエロー）に統一しました。視認性の向上が目的です。"},
+  {q:"スリーバントアウトは、ツーストライク後のバント試みがファウルになった場合のルールである",a:true,e:"ツーストライク後にバントを試みてファウルになると三振アウトとなります。これをスリーバントアウトと呼びます。"},
+  // === 走塁ルール（12問） ===
+  {q:"走者が離塁するタイミングは、投手の手からボールが離れた瞬間からである",a:true,e:"ソフトボールでは投手の手からボールが離れるまで走者は塁を離れることができません（離塁制限）。これが野球との大きな違いの一つです。"},
+  {q:"走者が一塁を駆け抜ける際、ファウル地域側（右側）に駆け抜ければ、タッグされてもアウトにならない",a:true,e:"一塁を駆け抜ける際にファウル地域側に進んだ場合は、二塁に進む意思がないとみなされ、タッグされてもアウトになりません。"},
+  {q:"ソフトボールでは、走者が守備妨害をした場合、その走者だけでなく打者走者もアウトになることがある",a:true,e:"故意の妨害や、ダブルプレーを防ぐための妨害など、状況によっては走者と打者走者の両方がアウトになることがあります。"},
+  {q:"走者が二塁と三塁の間で挟殺プレー（ランダウン）中に、後ろの走者に追い越された場合、追い越した走者がアウトになる",a:true,e:"前の走者を追い越した走者がアウトになります。追い越された走者（前の走者）はアウトにはなりません。"},
+  {q:"打球が走者に当たった場合、常に走者はアウトになる",a:false,e:"内野手を通過した打球、または内野手に触れた後の打球が走者に当たった場合はアウトにはなりません。内野手が守備機会を持つ前に走者に当たった場合にアウトとなります。"},
+  {q:"テンポラリーランナー（臨時代走）は2アウト時のキャッチャーに対してのみ適用される",a:false,e:"テンポラリーランナーは2アウト時のキャッチャーに加え、2023年の改正で投手にも適用可能となりました。迅速な試合進行が目的です。"},
+  {q:"走者が故意にボールを蹴った場合、守備妨害となり走者はアウトになる",a:true,e:"走者が故意にボールを蹴ったり、打球の方向を変えようとした場合は守備妨害でアウトになります。"},
+  {q:"走者がフォースプレーの状況で塁を踏んでいる場合、その走者にタッグしてもアウトにならない",a:false,e:"フォースプレーの状況では、走者が塁を踏んでいても関係なく、進塁義務が発生しているため次の塁への進塁が必要です。後ろの走者がアウトになりフォースが解除されれば塁に戻ることもできます。"},
+  {q:"ホームスチールの際、打者がスイングしてバットが捕手の送球を妨害した場合、走者はアウトになる",a:false,e:"打者がスイングした結果として捕手の送球を妨害した場合、打者の行為は正当なものとみなされ、守備妨害にはなりません。ただし、故意に妨害した場合は別です。"},
+  {q:"走者が一塁ベースに帰塁する際はオレンジベース（ダブルベース）側に戻らなければならない",a:false,e:"帰塁する際はフェア地域側の白いベースを使用します。オレンジベース（ファウル地域側）は、一塁に向かって走る打者走者が使用するためのものです。"},
+  {q:"離塁アウト（リーブアウト）が宣告された場合、投球は無効となりカウントされない",a:false,e:"離塁アウトが宣告されても、投球自体は有効です。打者のカウントには反映されます。"},
+  {q:"走者が逆走して本塁方向に戻り、守備を混乱させようとした場合はアウトになる",a:true,e:"走者が塁間で逆走して打球や守備を混乱させようとした場合、審判はその走者にアウトを宣告できます。"},
+  // === 守備ルール（10問） ===
+  {q:"ソフトボールの一塁ベースはダブルベース（白とオレンジ）を使用し、打者走者はオレンジ部分を踏まなければならない",a:false,e:"打者走者は原則としてオレンジベースを踏みますが、内野ゴロ以外の場合（長打など）は白いベースを踏んでも構いません。「踏まなければならない」は厳密には誤りです。"},
+  {q:"野手がフライを捕球する際、フェンスを越えて観客席に入って捕球しても有効である",a:false,e:"野手がフェンスを越えて観客席（デッドボールラインを越えた地域）で捕球した場合、その捕球は無効です。"},
+  {q:"内野フライルール（インフィールドフライ）は、無死または一死で走者が一塁・二塁、または満塁の場合に適用される",a:true,e:"インフィールドフライは、無死または一死で走者一・二塁、走者一・二・三塁（満塁）の場合に適用されます。内野手が普通の守備で捕球できるフライが対象です。"},
+  {q:"インフィールドフライが宣告された打球をわざと落としても、打者はアウトである",a:true,e:"インフィールドフライが宣告された時点で打者はアウトです。野手が実際に捕球したかどうかは関係ありません。走者は進塁のリスクを自ら判断します。"},
+  {q:"外野手がフライを捕球した後、送球がデッドボールラインを越えた場合、走者は2つの塁が与えられる",a:true,e:"野手の送球がデッドボールラインを越えた場合、送球時の走者の位置を基準に2つの安全進塁権が与えられます。"},
+  {q:"守備側のアピールプレーは、次の投球が行われるまでに行わなければ無効になる",a:true,e:"アピールプレー（塁の踏み忘れ、タッグアップ違反など）は、次の投球前にアピールしなければ権利を失います。"},
+  {q:"捕手がミットではなくファーストミットを使用することは許されている",a:false,e:"捕手は専用のキャッチャーミットを使用しなければなりません。ファーストミットの使用は認められていません。ただし、他の野手は一般的なグラブを使用します。"},
+  {q:"守備側がタイムをかけている間に走者が進塁した場合、その進塁は認められない",a:true,e:"タイム中はボールデッド状態のため、走者は進塁できません。タイムが解除されてから走塁を再開する必要があります。"},
+  {q:"ソフトボールではDP（指名選手）とFLEX（守備専門選手）の制度があり、DPは守備につかなくてもよい",a:true,e:"2002年に導入されたDP/FLEX制度では、DPは打撃のみ担当し守備につく必要はありません。FLEXは守備のみ担当し、打順には入りません。"},
+  {q:"守備側の選手がランナーの走路上に立って走塁を妨げた場合、走塁妨害（オブストラクション）となる",a:true,e:"ボールを持っていない野手やボールを処理していない野手が走者の走路を妨げた場合、走塁妨害が宣告されます。"},
+  // === 審判・判定ルール（8問） ===
+  {q:"ソフトボールの審判は主審1名と塁審1名の最低2名で行うことができる",a:true,e:"公式試合では主審と塁審を含む2名以上で行います。通常は主審1名と塁審1-3名の2-4名体制です。"},
+  {q:"ソフトボールでは、審判の判定に対して監督がビデオ判定を要求することができる",a:false,e:"ソフトボールにはビデオ判定（リクエスト制度）は導入されていません。審判の判定が最終的なものとなります。国際大会の一部で試験的に導入されたことはあります。"},
+  {q:"タッチプレーの際、野手がボールをグラブで持ったまま走者にグラブをタッチすればアウトになる",a:true,e:"タッチ（タッグ）プレーでは、ボールを確保したグラブまたは手で走者に触れればアウトが成立します。"},
+  {q:"フェアかファウルかの判定は、ボールが最初に地面に落ちた位置で決まる",a:false,e:"一塁・三塁より手前では、ボールが最終的に止まった位置やフェア地域で野手に触れたかどうかで判定されます。一塁・三塁ベースより先では、ベースの上空を通過した位置で判定されます。"},
+  {q:"コリジョンルール（衝突防止ルール）は、ソフトボールでは本塁だけでなく全ての塁で適用される",a:false,e:"コリジョンルールは主に本塁付近での衝突を防ぐためのルールです。全ての塁に適用されるわけではありません。"},
+  {q:"タイブレーカー制（促進ルール）では、延長回の先頭打者は前の回の最後の打者が二塁走者として出発する",a:true,e:"タイブレーカーでは、前の回の最後の完了打席の打者が二塁に配置され、その次の打者から打撃が始まります。"},
+  {q:"打球がピッチャーズプレートに当たって跳ね上がり、そのままファウル地域に出た場合はファウルボールである",a:false,e:"プレートはフェア地域にあるため、プレートに当たった打球はインフライトの打球扱いです。その後の状況で判定が変わりますが、プレートに当たっただけではファウルとは限りません。"},
+  {q:"同点で最終回裏の攻撃中にサヨナラホームランが出た場合、打者走者は全ての塁を踏まなければ得点が認められない",a:true,e:"サヨナラの場面でも、打者走者は正しく全ての塁を踏む必要があります。塁を踏み忘れると相手チームのアピールでアウトになる可能性があります。"},
+  // === ストライクゾーン改正問題（5問） ===
+  {q:"2018年の改正前、ソフトボールのストライクゾーンの上限は「脇の下」だった",a:true,e:"2018年の改正前は上限が「脇の下」でしたが、改正後は「みぞおち（胸骨の下端）」に変更されました。これによりストライクゾーンが下方向に狭くなりました。"},
+  {q:"2018年の改正で、ストライクゾーンの横幅はホームベースの幅ちょうどに限定された",a:false,e:"2018年の改正で、ストライクゾーンの横幅はホームベース上の空間に加え、ボールの一部がベースの端にかかっていればストライクとなりました。実質的に横幅は拡大されました。"},
+  {q:"2018年改正後、投球がストライクゾーンのどこか一部でも通過すればストライクと判定される",a:true,e:"2018年改正で「ボールがストライクゾーンのどこか一部を通過すればストライク」に変更されました。改正前は「ストライクゾーンを完全に通過」する必要がありました。"},
+  {q:"ストライクゾーンの下限は、打者の膝頭の下部で改正後も変わっていない",a:true,e:"ストライクゾーンの下限は改正前後で変わらず「膝頭の下部」です。変更されたのは上限（脇の下→みぞおち）と横幅の判定基準です。"},
+  {q:"2018年のストライクゾーン改正は、投手有利にするための改正だった",a:false,e:"上限がみぞおちに下がったことで高めのストライクが狭くなり投手に不利、しかし横幅の拡大と「一部通過でOK」は投手に有利。総合的には打撃促進・ゲーム活性化が主な目的でした。"},
+  // === グラウンド寸法（13問） ===
+  {q:"ソフトボールのピッチャーズサークルの半径は2.44メートルである",a:true,e:"ピッチャーズサークルの半径は2.44m（8フィート）です。投手はこの円の中からのみ投球できます。"},
+  {q:"ソフトボールの塁間距離は、女子の場合18.29メートルである",a:true,e:"女子ソフトボールの塁間距離は18.29m（60フィート）です。男子は18.29mまたはリーグによっては19.81m（65フィート）の場合もあります。"},
+  {q:"女子ソフトボールの投手板から本塁までの距離は13.11メートルである",a:true,e:"女子の投球距離は13.11m（43フィート）です。男子は14.02m（46フィート）です。"},
+  {q:"バッターボックスの大きさは幅0.91メートル、奥行き2.13メートルである",a:true,e:"バッターボックスは0.91m×2.13m（3フィート×7フィート）です。本塁プレートの両側に設けられます。"},
+  {q:"ホームベースの形は正五角形で、打者に面した辺の長さは43.2センチメートルである",a:true,e:"ホームベースは正五角形で、打者に面した辺（最も長い辺）は43.2cm（17インチ）です。"},
+  {q:"コーチャーボックスは一塁側と三塁側の両方に設けられ、コーチは必ずその中にいなければならない",a:false,e:"コーチャーボックスは一塁側と三塁側に設けられますが、コーチは打球や送球の妨げにならない限り、ボックスの外に出ることも許容される場合があります。"},
+  {q:"ソフトボールのダブルベース（一塁）では、オレンジ部分はファウル地域に設置される",a:true,e:"ダブルベースのオレンジ部分はファウル地域側に、白い部分はフェア地域側に設置されます。打者走者の安全確保のための設計です。"},
+  {q:"ソフトボールの外野フェンスまでの距離は男女とも同じである",a:false,e:"外野フェンスまでの距離は男女で異なります。女子は通常60.96m（200フィート）以上、男子は68.58m（225フィート）以上が推奨されています。大会によって異なります。"},
+  {q:"ネクストバッターズサークルの直径は1.52メートルである",a:true,e:"ネクストバッターズサークル（次打者席）の直径は1.52m（5フィート）です。"},
+  {q:"ソフトボールのベースの大きさは38.1センチメートル四方である",a:true,e:"一塁・二塁・三塁のベースは38.1cm（15インチ）四方の正方形です。厚さは7.6cm-12.7cm（3-5インチ）です。"},
+  {q:"スリーフットラインは本塁と一塁を結ぶ線の外側に引かれ、長さは約13.7メートルである",a:false,e:"スリーフットライン（ランニングレーン）は本塁から一塁までの後半部分（約半分の距離）に引かれます。全長は塁間の約半分で、約9.1m（30フィート）です。"},
+  {q:"ソフトボールのボールの周囲は30.2-30.8センチメートルで、野球のボールより大きい",a:true,e:"ソフトボールの公式球の周囲は30.2-30.8cm（11.875-12.125インチ）です。野球のボール（約23cm）より明らかに大きいです。"},
+  {q:"ピッチャープレートの幅は60.96センチメートル（24インチ）である",a:true,e:"ピッチャープレートの幅は60.96cm（24インチ）、奥行きは15.24cm（6インチ）です。"},
+  // === 歴史・豆知識（7問） ===
+  {q:"ソフトボールの原型は「インドア・ベースボール」と呼ばれ、室内競技として始まった",a:true,e:"1887年にアメリカのシカゴで「インドア・ベースボール」として誕生しました。感謝祭の日にジムの中で始まったとされています。"},
+  {q:"ソフトボールがオリンピックの正式種目に初めて採用されたのは2000年シドニー大会からである",a:false,e:"ソフトボールがオリンピックの正式種目になったのは1996年アトランタ大会からです。2008年北京大会後に除外され、2020年東京大会で復活しました。"},
+  {q:"ソフトボールの試合は7イニング制で行われる",a:true,e:"ソフトボールの正式な試合は7イニング制です。野球の9イニングより短く、迅速な試合進行が特徴です。"},
+  {q:"コールドゲームは、5回以降に一定以上の点差がついた場合に適用される",a:false,e:"コールドゲーム（得点差によるゲーム終了）は、通常3回で20点差、4回で15点差、5回以降で7点差（大会によって異なる）で適用されます。5回以降だけではありません。"},
+  {q:"ソフトボールでは、選手の交代は一度退いた選手が再び出場できる「再出場ルール」がある",a:true,e:"ソフトボールではスターティングメンバーに限り、一度交代した後に1回だけ再出場（リエントリー）が認められています。"},
+  {q:"国際ソフトボール連盟（ISF）と世界野球連盟（IBAF）は、2013年に統合してWBSC（世界野球ソフトボール連盟）となった",a:true,e:"2013年にISFとIBAFが統合し、WBSC（World Baseball Softball Confederation）が発足しました。野球とソフトボールの統括団体として活動しています。"},
+  {q:"ソフトボールの打者は、金属バットの使用が義務付けられている",a:false,e:"金属バットの使用は義務ではありません。木製バットや複合素材バットの使用も認められています。ただし、大会によってバットの規定は異なります。"},
+  // === 追加上級問題（21問） ===
+  {q:"投手が投球モーション中に帽子が落ちた場合、不正投球となる",a:false,e:"帽子が落ちただけでは不正投球にはなりません。投球動作自体に違反がなければプレーは続行されます。"},
+  {q:"打者が故意に投球に当たりにいった場合、審判はデッドボールを宣告しない",a:true,e:"打者が故意に投球に当たりにいったと審判が判断した場合、デッドボールではなくボールまたはストライクが宣告されます。"},
+  {q:"ソフトボールでは、ベースコーチが走者に触れて進塁を助けた場合、その走者はアウトになる",a:true,e:"ベースコーチが走者を物理的に補助（押す、止めるなど）した場合、その走者はアウトになります。言葉での指示のみ許可されます。"},
+  {q:"雨天などで試合が中断された場合、5回を完了していれば正式試合として成立する",a:true,e:"5回を完了している場合（後攻チームがリードしている場合は4回半でも可）、正式試合として成立します。"},
+  {q:"二塁走者が三塁へのスチールを試みた際、打者が守備妨害をした場合、走者は二塁に戻される",a:true,e:"打者による守備妨害が発生した場合、走者はスチール前の塁（この場合は二塁）に戻されます。打者はアウトになります。"},
+  {q:"ソフトボールの試合で使用するヘルメットには、フェイスガードが必須である",a:false,e:"打者用ヘルメットのフェイスガード装着は、大会や年齢区分によって義務付けられている場合とそうでない場合があります。全ての試合で必須ではありません。"},
+  {q:"隠し球は、ソフトボールでは禁止されている",a:false,e:"ソフトボールでも隠し球は禁止されていません。ただし、投手がプレートに触れている状態でボールを持っていない場合は不正投球となるため、実行には制約があります。"},
+  {q:"フォースアウトの状況でも、三塁走者がホームインすれば得点として認められる",a:false,e:"フォースアウトが第3アウトとなった場合、たとえ三塁走者が先にホームインしていても得点は認められません。フォースアウトによる第3アウトでは得点は無効です。"},
+  {q:"タッグアップ（タッチアップ）は、フライが捕球された瞬間以降に塁を離れなければならない",a:true,e:"タッグアップでは、フライが野手のグラブに触れた瞬間以降に塁を離れることが許されます。それ以前に離塁すると、帰塁させられるかアピールでアウトになります。"},
+  {q:"打者が空振りした際、バットがキャッチャーに当たった場合は打撃妨害となり打者は一塁に進む",a:false,e:"空振りのフォロースルーでバットがキャッチャーに当たった場合、それは打撃妨害ではありません。打撃妨害はキャッチャーが打者の打撃行為を妨げた場合に適用されます。"},
+  {q:"ソフトボールでは、振り逃げの際に打者走者は一塁にスライディングしてもよい",a:false,e:"打者走者が一塁にスライディングすることは一般的には認められません。一塁は駆け抜けるのが原則で、スライディングは衝突の危険があるため禁止されている大会が多いです。"},
+  {q:"ソフトボールのバットの最大長さは86.4センチメートルである",a:true,e:"ソフトボールのバットの最大長さは86.4cm（34インチ）で、最大重量は1077g（38オンス）です。"},
+  {q:"インフィールドフライが宣告されても、走者は進塁を試みることができる",a:true,e:"インフィールドフライで打者はアウトですが、走者は自己の危険で進塁を試みることができます。ただしフライが捕球された場合はタッグアップが必要です。"},
+  {q:"一塁手以外の内野手がファーストミットを使用することは許されている",a:false,e:"ファーストミット（一塁手用ミット）を使用できるのは一塁手のみです。他の内野手は通常のグラブを使用しなければなりません。"},
+  {q:"ソフトボールで投手交代する場合、最低1人の打者に投球を完了しなければ再び交代できない",a:true,e:"救援投手は最低1人の打者への投球を完了するか、そのイニングが終了するまで投げ続けなければなりません。"},
+  {q:"打者が打席に入ってから、10秒以内に打撃姿勢をとらなければストライクが宣告される",a:true,e:"打者は打席に入ってから速やかに（通常10秒以内に）打撃姿勢をとる必要があり、遅延した場合はストライクが宣告されます。"},
+  {q:"内野ゴロの際、打者走者と野手が同時に一塁ベースに到達した場合、打者走者はセーフになる",a:false,e:"「タイはランナー」というのは俗説です。同時到達の場合の判定は審判の裁量に委ねられ、明確に「同時ならセーフ」というルールは存在しません。"},
+  {q:"ファウルチップがキャッチャーに正規に捕球された場合、ストライクとしてカウントされる",a:true,e:"ファウルチップが直接キャッチャーのミットに収まった場合、ストライクとしてカウントされます。ツーストライクからのファウルチップは三振となります。"},
+  {q:"走者が塁間にいるとき、野手がボールを持たずにタッグの動作をして走者を惑わせた場合、走塁妨害となる",a:true,e:"ボールを持っていない野手がタッグの動作をして走者を欺いた場合、走塁妨害（オブストラクション）が宣告されます。"},
+  {q:"ソフトボールでは、DH（指名打者）制度は採用されていない",a:true,e:"ソフトボールではDH制度ではなく、DP（指名選手）/FLEX制度が採用されています。DHとDPは似ていますが、DPはいつでも守備に就くことができるなど、より柔軟な制度です。"},
+  {q:"ソフトボールの国際試合では、1チームのベンチ入りメンバーは20名までである",a:false,e:"国際試合でのベンチ入りメンバーは通常15-17名程度です。大会の規定によって異なりますが、20名は一般的な上限を超えています。"}
+];
+
+// ===== アプリ状態 =====
+let quizQuestions = [];
+let currentIndex = 0;
+let correctNum = 0;
+let wrongNum = 0;
+let answers = []; // { q, a, userAnswer, isCorrect, e }
+const QUIZ_COUNT = 20;
+
+// ===== 画面切り替え =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+// ===== シャッフル =====
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ===== クイズ開始 =====
+function startQuiz() {
+  quizQuestions = shuffle(ALL_QUESTIONS).slice(0, QUIZ_COUNT);
+  currentIndex = 0;
+  correctNum = 0;
+  wrongNum = 0;
+  answers = [];
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+// ===== 問題表示 =====
+function renderQuestion() {
+  const q = quizQuestions[currentIndex];
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('progressFill').style.width = ((currentIndex) / QUIZ_COUNT * 100) + '%';
+  document.getElementById('progressText').textContent = (currentIndex + 1) + ' / ' + QUIZ_COUNT;
+  document.getElementById('correctCount').textContent = correctNum;
+  document.getElementById('wrongCount').textContent = wrongNum;
+
+  // リセット
+  const btnO = document.getElementById('btnO');
+  const btnX = document.getElementById('btnX');
+  btnO.className = 'btn-answer btn-o';
+  btnX.className = 'btn-answer btn-x';
+  btnO.disabled = false;
+  btnX.disabled = false;
+  document.getElementById('resultBox').className = 'result-box';
+  document.getElementById('btnNext').className = 'btn-next';
+
+  // カードのアニメーション
+  const card = document.getElementById('questionCard');
+  card.classList.remove('fade-in');
+  void card.offsetWidth;
+  card.classList.add('fade-in');
+}
+
+// ===== 回答 =====
+function submitAnswer(userAnswer) {
+  const q = quizQuestions[currentIndex];
+  const isCorrect = (userAnswer === q.a);
+
+  const btnO = document.getElementById('btnO');
+  const btnX = document.getElementById('btnX');
+
+  // ボタン無効化
+  btnO.disabled = true;
+  btnX.disabled = true;
+
+  if (isCorrect) {
+    correctNum++;
+    if (userAnswer === true) {
+      btnO.classList.add('correct-selected');
+    } else {
+      btnX.classList.add('correct-selected');
+    }
+  } else {
+    wrongNum++;
+    if (userAnswer === true) {
+      btnO.classList.add('wrong-selected');
+      btnX.classList.add('disabled');
+    } else {
+      btnX.classList.add('wrong-selected');
+      btnO.classList.add('disabled');
+    }
+  }
+
+  // スコア更新
+  document.getElementById('correctCount').textContent = correctNum;
+  document.getElementById('wrongCount').textContent = wrongNum;
+
+  // 結果表示
+  const box = document.getElementById('resultBox');
+  box.className = 'result-box show ' + (isCorrect ? 'correct-result' : 'wrong-result');
+  document.getElementById('resultLabel').textContent = isCorrect ? '⭕ 正解！' : '❌ 不正解…';
+  document.getElementById('explanation').textContent = (q.a ? '答え: ○' : '答え: ×') + ' - ' + q.e;
+
+  // 次へボタン
+  const btnNext = document.getElementById('btnNext');
+  btnNext.className = 'btn-next show';
+  btnNext.textContent = (currentIndex < QUIZ_COUNT - 1) ? '次の問題 →' : '結果を見る →';
+
+  // 記録
+  answers.push({ q: q.q, a: q.a, userAnswer, isCorrect, e: q.e });
+}
+
+// ===== 次の問題 =====
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= QUIZ_COUNT) {
+    showResult();
+  } else {
+    renderQuestion();
+  }
+}
+
+// ===== 結果画面 =====
+function showResult() {
+  showScreen('result-screen');
+  document.getElementById('finalScore').textContent = correctNum;
+
+  const circle = document.getElementById('resultCircle');
+  const rankEl = document.getElementById('resultRank');
+  const commentEl = document.getElementById('resultComment');
+
+  let rank, cls, comment;
+  const pct = correctNum / QUIZ_COUNT * 100;
+
+  if (pct >= 90) {
+    rank = 'S ランク - 審判級マスター'; cls = 'rank-s';
+    comment = '素晴らしい！ソフトボールのルールを完璧に理解しています。審判ができるレベルです！';
+  } else if (pct >= 75) {
+    rank = 'A ランク - 上級者'; cls = 'rank-a';
+    comment = '上級ルールもよく知っています。あと少しで完璧です！';
+  } else if (pct >= 60) {
+    rank = 'B ランク - 中上級者'; cls = 'rank-b';
+    comment = '基本はバッチリ！細かいルールをもう少し覚えるとさらに上を目指せます。';
+  } else if (pct >= 40) {
+    rank = 'C ランク - 中級者'; cls = 'rank-c';
+    comment = '基礎力はあります。間違えた問題の解説をチェックしてレベルアップしましょう！';
+  } else {
+    rank = 'D ランク - まだまだ修行中'; cls = 'rank-d';
+    comment = '上級問題は難しかったですね。解説を読んで知識を深めましょう！';
+  }
+
+  circle.className = 'result-circle ' + cls;
+  rankEl.textContent = rank;
+  commentEl.textContent = comment;
+
+  // プログレスバーを完了状態にする
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+// ===== 復習画面 =====
+let reviewFilter = 'wrong';
+
+function showReview() {
+  showScreen('review-screen');
+  renderReview();
+}
+
+function setFilter(f, btn) {
+  reviewFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderReview();
+}
+
+function renderReview() {
+  const list = document.getElementById('reviewList');
+  const items = reviewFilter === 'wrong'
+    ? answers.filter(a => !a.isCorrect)
+    : answers;
+
+  if (items.length === 0) {
+    list.innerHTML = '<p style="text-align:center;color:var(--text-light);padding:40px 0;">間違えた問題はありません！🎉</p>';
+    return;
+  }
+
+  list.innerHTML = items.map((item, i) => {
+    const cls = item.isCorrect ? 'was-correct' : 'was-wrong';
+    const mark = item.isCorrect ? '⭕ 正解' : '❌ 不正解';
+    const correctAns = item.a ? '○' : '×';
+    return `<div class="review-item ${cls}">
+      <div class="ri-q">${i + 1}. ${item.q}</div>
+      <div class="ri-a">${mark}（正答: ${correctAns}）</div>
+      <div class="ri-exp">${item.e}</div>
+    </div>`;
+  }).join('');
+}
+</script>
+
+</body>
+</html>
