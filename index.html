@@ -9,131 +9,7 @@
 <title>ソフトボール 上級クイズ 3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:'Noto Sans JP','Hiragino Sans',sans-serif;
-  background:#f5f0ea;color:#1a1a1a;
-  min-height:100vh;min-height:100dvh;
-  overflow-x:hidden;
-}
-button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
-
-/* === Background === */
-.bg-accent{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
-.bg-accent–warm{top:-20%;right:-15%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,120,40,.08) 0%,transparent 70%)}
-.bg-accent–cool{bottom:-15%;left:-10%;width:350px;height:350px;background:radial-gradient(circle,rgba(40,100,200,.06) 0%,transparent 70%)}
-
-/* === Layout === */
-.container{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:20px 16px;min-height:100vh;min-height:100dvh}
-.container–center{display:flex;flex-direction:column;align-items:center;justify-content:center}
-
-/* === Start Screen === */
-.logo-circle{
-width:96px;height:96px;border-radius:50%;
-background:linear-gradient(145deg,#ff8c32,#e06010);
-display:flex;align-items:center;justify-content:center;
-box-shadow:0 8px 32px rgba(255,140,50,.25);margin-bottom:24px;
-}
-.logo-circle span{font-size:48px}
-.title{
-font-size:32px;font-weight:800;letter-spacing:2px;
-background:linear-gradient(135deg,#e0600f,#c04000);
--webkit-background-clip:text;-webkit-text-fill-color:transparent;
-background-clip:text;color:transparent;
-}
-.subtitle{font-size:18px;font-weight:600;color:#6b5b4f;letter-spacing:4px;margin-top:4px}
-.desc{text-align:center;color:#7a6e62;font-size:14px;line-height:1.7;margin:28px 0 36px}
-.btn-start{
-background:linear-gradient(135deg,#ff8c32,#e05a10);color:#fff;
-border:none;border-radius:14px;padding:16px 48px;
-font-size:17px;font-weight:700;cursor:pointer;letter-spacing:2px;
-box-shadow:0 6px 24px rgba(255,100,30,.3);
-transition:transform .15s,box-shadow .15s;
-}
-.btn-start:active{transform:scale(.96)}
-
-/* === Progress === */
-.progress-bar{width:100%;height:6px;border-radius:3px;background:rgba(0,0,0,.08);overflow:hidden;margin-bottom:12px}
-.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#ff8c32,#ffb86c);transition:width .4s ease}
-.header-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.q-num{font-size:13px;font-weight:600;color:#8a7d70}
-.score-label{font-size:14px;font-weight:700;color:#d45a10;display:flex;align-items:center;gap:6px}
-.streak-badge{font-size:12px;background:rgba(255,100,30,.12);border-radius:8px;padding:2px 8px;color:#c04a00}
-
-/* === Question Card === */
-.question-card{
-background:#ffffff;
-border:1px solid rgba(0,0,0,.08);
-border-radius:18px;padding:28px 20px;margin-bottom:24px;
-box-shadow:0 2px 12px rgba(0,0,0,.06);
-}
-.question-text{font-size:16px;line-height:1.8;font-weight:600;color:#1a1a1a}
-
-/* === Answer Buttons === */
-.btn-row{display:flex;gap:14px;margin-bottom:20px}
-.btn-ans{
-flex:1;border-radius:16px;padding:20px 12px;cursor:pointer;
-display:flex;flex-direction:column;align-items:center;gap:6px;
-background:#ffffff;color:#1a1a1a;
-transition:all .2s ease;
-box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
-.btn-ans[disabled]{cursor:default}
-.btn-ans–maru{border:2px solid #50c878}
-.btn-ans–batsu{border:2px solid #e85050}
-.btn-ans .symbol{font-size:36px;font-weight:800}
-.btn-ans–maru .symbol{color:#2a9d50}
-.btn-ans–batsu .symbol{color:#d03030}
-.btn-ans .label{font-size:13px;font-weight:600;color:#5a5a5a}
-.btn-ans–correct{background:#e8f8ee!important;border-color:#2a9d50!important;box-shadow:0 4px 16px rgba(42,157,80,.15)}
-.btn-ans–wrong{background:#fde8e8!important;border-color:#d03030!important;box-shadow:0 4px 16px rgba(208,48,48,.15)}
-.btn-ans–dim{opacity:.35}
-
-/* === Feedback === */
-.feedback{border-radius:16px;padding:20px;margin-top:4px;animation:slideUp .3s ease}
-.feedback–correct{background:#e8f8ee;border:1px solid #b8e6c8}
-.feedback–wrong{background:#fde8e8;border:1px solid #f0c0c0}
-.feedback-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.feedback-icon{font-size:20px}
-.feedback-title{font-size:16px;font-weight:700;color:#1a1a1a}
-.hint-text{font-size:14px;line-height:1.7;color:#3a3a3a;margin:0 0 16px}
-.btn-next{
-width:100%;background:#f0ebe5;border:1px solid rgba(0,0,0,.1);
-border-radius:12px;padding:14px;color:#1a1a1a;font-size:15px;font-weight:600;cursor:pointer;
-transition:background .15s;
-}
-.btn-next:active{background:#e5ddd5}
-
-/* === Result === */
-.result-emoji{font-size:56px;margin-bottom:12px}
-.result-grade{font-size:26px;font-weight:800;color:#d45a10;margin-bottom:16px}
-.score-circle{
-width:120px;height:120px;border-radius:50%;
-border:3px solid rgba(212,90,16,.25);background:rgba(255,140,50,.06);
-display:flex;flex-direction:column;align-items:center;justify-content:center;
-margin-bottom:16px;
-}
-.score-num{font-size:42px;font-weight:800;color:#d45a10;line-height:1}
-.score-denom{font-size:14px;color:#7a6e62;font-weight:600}
-.result-msg{font-size:15px;color:#5a5048;text-align:center;margin-bottom:8px}
-.result-streak{font-size:14px;color:#c04a00;margin-bottom:20px}
-.review-wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px}
-.review-item{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600}
-.review-item–ok{background:#e8f8ee;color:#1e7a3a}
-.review-item–ng{background:#fde8e8;color:#b02020}
-
-/* === Transitions === */
-.fade-enter{opacity:1;transition:opacity .2s ease}
-.fade-exit{opacity:0;transition:opacity .2s ease}
-
-@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-/* === Hidden utility === */
-.hidden{display:none!important}
-</style>
-
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -196,7 +72,133 @@ margin-bottom:16px;
   <button class="btn-start" onclick="startQuiz()">もう一度挑戦</button>
 </div>
 
-<script>
+<script src="questions.js"></script>
+
+<script src="app.js"></script>
+
+</body>
+</html>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
+body{
+  font-family:'Noto Sans JP','Hiragino Sans',sans-serif;
+  background:#f5f0ea;color:#1a1a1a;
+  min-height:100vh;min-height:100dvh;
+  overflow-x:hidden;
+}
+button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
+
+/* === Background === */
+.bg-accent{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
+.bg-accent--warm{top:-20%;right:-15%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,120,40,.08) 0%,transparent 70%)}
+.bg-accent--cool{bottom:-15%;left:-10%;width:350px;height:350px;background:radial-gradient(circle,rgba(40,100,200,.06) 0%,transparent 70%)}
+
+/* === Layout === */
+.container{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:20px 16px;min-height:100vh;min-height:100dvh}
+.container--center{display:flex;flex-direction:column;align-items:center;justify-content:center}
+
+/* === Start Screen === */
+.logo-circle{
+  width:96px;height:96px;border-radius:50%;
+  background:linear-gradient(145deg,#ff8c32,#e06010);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 32px rgba(255,140,50,.25);margin-bottom:24px;
+}
+.logo-circle span{font-size:48px}
+.title{
+  font-size:32px;font-weight:800;letter-spacing:2px;
+  background:linear-gradient(135deg,#e0600f,#c04000);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;color:transparent;
+}
+.subtitle{font-size:18px;font-weight:600;color:#6b5b4f;letter-spacing:4px;margin-top:4px}
+.desc{text-align:center;color:#7a6e62;font-size:14px;line-height:1.7;margin:28px 0 36px}
+.btn-start{
+  background:linear-gradient(135deg,#ff8c32,#e05a10);color:#fff;
+  border:none;border-radius:14px;padding:16px 48px;
+  font-size:17px;font-weight:700;cursor:pointer;letter-spacing:2px;
+  box-shadow:0 6px 24px rgba(255,100,30,.3);
+  transition:transform .15s,box-shadow .15s;
+}
+.btn-start:active{transform:scale(.96)}
+
+/* === Progress === */
+.progress-bar{width:100%;height:6px;border-radius:3px;background:rgba(0,0,0,.08);overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#ff8c32,#ffb86c);transition:width .4s ease}
+.header-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.q-num{font-size:13px;font-weight:600;color:#8a7d70}
+.score-label{font-size:14px;font-weight:700;color:#d45a10;display:flex;align-items:center;gap:6px}
+.streak-badge{font-size:12px;background:rgba(255,100,30,.12);border-radius:8px;padding:2px 8px;color:#c04a00}
+
+/* === Question Card === */
+.question-card{
+  background:#ffffff;
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:18px;padding:28px 20px;margin-bottom:24px;
+  box-shadow:0 2px 12px rgba(0,0,0,.06);
+}
+.question-text{font-size:16px;line-height:1.8;font-weight:600;color:#1a1a1a}
+
+/* === Answer Buttons === */
+.btn-row{display:flex;gap:14px;margin-bottom:20px}
+.btn-ans{
+  flex:1;border-radius:16px;padding:20px 12px;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:6px;
+  background:#ffffff;color:#1a1a1a;
+  transition:all .2s ease;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.btn-ans[disabled]{cursor:default}
+.btn-ans--maru{border:2px solid #50c878}
+.btn-ans--batsu{border:2px solid #e85050}
+.btn-ans .symbol{font-size:36px;font-weight:800}
+.btn-ans--maru .symbol{color:#2a9d50}
+.btn-ans--batsu .symbol{color:#d03030}
+.btn-ans .label{font-size:13px;font-weight:600;color:#5a5a5a}
+.btn-ans--correct{background:#e8f8ee!important;border-color:#2a9d50!important;box-shadow:0 4px 16px rgba(42,157,80,.15)}
+.btn-ans--wrong{background:#fde8e8!important;border-color:#d03030!important;box-shadow:0 4px 16px rgba(208,48,48,.15)}
+.btn-ans--dim{opacity:.35}
+
+/* === Feedback === */
+.feedback{border-radius:16px;padding:20px;margin-top:4px;animation:slideUp .3s ease}
+.feedback--correct{background:#e8f8ee;border:1px solid #b8e6c8}
+.feedback--wrong{background:#fde8e8;border:1px solid #f0c0c0}
+.feedback-header{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.feedback-icon{font-size:20px}
+.feedback-title{font-size:16px;font-weight:700;color:#1a1a1a}
+.hint-text{font-size:14px;line-height:1.7;color:#3a3a3a;margin:0 0 16px}
+.btn-next{
+  width:100%;background:#f0ebe5;border:1px solid rgba(0,0,0,.1);
+  border-radius:12px;padding:14px;color:#1a1a1a;font-size:15px;font-weight:600;cursor:pointer;
+  transition:background .15s;
+}
+.btn-next:active{background:#e5ddd5}
+
+/* === Result === */
+.result-emoji{font-size:56px;margin-bottom:12px}
+.result-grade{font-size:26px;font-weight:800;color:#d45a10;margin-bottom:16px}
+.score-circle{
+  width:120px;height:120px;border-radius:50%;
+  border:3px solid rgba(212,90,16,.25);background:rgba(255,140,50,.06);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  margin-bottom:16px;
+}
+.score-num{font-size:42px;font-weight:800;color:#d45a10;line-height:1}
+.score-denom{font-size:14px;color:#7a6e62;font-weight:600}
+.result-msg{font-size:15px;color:#5a5048;text-align:center;margin-bottom:8px}
+.result-streak{font-size:14px;color:#c04a00;margin-bottom:20px}
+.review-wrap{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:28px}
+.review-item{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600}
+.review-item--ok{background:#e8f8ee;color:#1e7a3a}
+.review-item--ng{background:#fde8e8;color:#b02020}
+
+/* === Transitions === */
+.fade-enter{opacity:1;transition:opacity .2s ease}
+.fade-exit{opacity:0;transition:opacity .2s ease}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* === Hidden utility === */
+.hidden{display:none!important}
 const QUESTIONS = [
 { q: “インフィールドフライが宣告された場合、ランナーはリタッチせずに進塁できる。”, a: false, hint: “インフィールドフライでもフライのルールが適用され、リタッチ義務があります。” },
 { q: “DP（指名選手）とFLEX（守備専門選手）は試合中に役割を入れ替えることができる。”, a: true, hint: “ISF公式ルールではDP/FLEXの入れ替えが認められています。” },
@@ -301,9 +303,7 @@ const QUESTIONS = [
 { q: “2018年のストライクゾーン改正前は、ドロップボールがベース上で急落下してストライクゾーンを通過できなかった場合、ボールと判定されていた。”, a: true, hint: “改正前はストライクゾーンを完全に通過する必要があったため、ベース手前で落ちるドロップはボールでした。改正後はゾーンのどこかを通ればストライクです。” },
 { q: “ソフトボールの国際大会で使用される公式球の色は白色である。”, a: false, hint: “国際大会で使用される公式球は黄色（オプティックイエロー）で、縫い糸は赤色です。2002年から視認性向上のため国際大会で採用されました。” },
 { q: “ソフトボールの「ソフトボール」という名称は、最初から使われていた。”, a: false, hint: “当初は「インドア・ベースボール」「キトンボール」「ダイヤモンドボール」など様々な名称で呼ばれ、「ソフトボール」に統一されたのは1926年頃です。” },
-];
-
-// ===== SOUND ENGINE (Web Audio API) =====
+];// ===== SOUND ENGINE (Web Audio API) =====
 var audioCtx = null;
 
 function initAudio() {
@@ -524,7 +524,3 @@ wrap.appendChild(div);
 
 // ===== INIT =====
 $(‘btn-start’).addEventListener(‘click’, startQuiz);
-</script>
-
-</body>
-</html>
