@@ -9,144 +9,33 @@
 <title>ソフトボール 上級クイズ 3</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-<div class="bg-accent bg-accent--warm"></div>
-<div class="bg-accent bg-accent--cool"></div>
-
-<!-- ======= START SCREEN ======= -->
-
-<div id="screen-start" class="container container--center">
-  <div class="logo-circle"><span>🥎</span></div>
-  <h1 class="title">ソフトボール</h1>
-  <h2 class="subtitle">上級クイズ 3</h2>
-  <p class="desc">○×形式 ・ 全10問<br>上級者向けのルール・知識問題</p>
-  <button class="btn-start" id="btn-start">スタート</button>
-</div>
-
-<!-- ======= QUIZ SCREEN ======= -->
-
-<div id="screen-quiz" class="container hidden">
-  <div>
-    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-    <div class="header-info">
-      <span class="q-num" id="q-num"></span>
-      <span class="score-label" id="score-label"></span>
-    </div>
-  </div>
-  <div class="question-card">
-    <p class="question-text" id="question-text"></p>
-  </div>
-  <div class="btn-row">
-    <button class="btn-ans btn-ans--maru" id="btn-maru" onclick="handleAnswer(true)">
-      <span class="symbol">○</span><span class="label">正しい</span>
-    </button>
-    <button class="btn-ans btn-ans--batsu" id="btn-batsu" onclick="handleAnswer(false)">
-      <span class="symbol">✕</span><span class="label">誤り</span>
-    </button>
-  </div>
-  <div id="feedback" class="feedback hidden">
-    <div class="feedback-header">
-      <span class="feedback-icon" id="fb-icon"></span>
-      <span class="feedback-title" id="fb-title"></span>
-    </div>
-    <p class="hint-text" id="fb-hint"></p>
-    <button class="btn-next" id="btn-next" onclick="nextQuestion()">次の問題へ →</button>
-  </div>
-</div>
-
-<!-- ======= RESULT SCREEN ======= -->
-
-<div id="screen-result" class="container container--center hidden">
-  <span class="result-emoji" id="res-emoji"></span>
-  <h2 class="result-grade" id="res-grade"></h2>
-  <div class="score-circle">
-    <span class="score-num" id="res-score"></span>
-    <span class="score-denom" id="res-denom"></span>
-  </div>
-  <p class="result-msg" id="res-msg"></p>
-  <p class="result-streak hidden" id="res-streak"></p>
-  <div class="review-wrap" id="review-wrap"></div>
-  <button class="btn-start" onclick="startQuiz()">もう一度挑戦</button>
-</div>
-
-<script src="questions.js"></script>
-
-<script src="app.js"></script>
-
-</body>
-</html>*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}
-body{
-  font-family:'Noto Sans JP','Hiragino Sans',sans-serif;
-  background:#f5f0ea;color:#1a1a1a;
-  min-height:100vh;min-height:100dvh;
-  overflow-x:hidden;
-}
+body{font-family:'Noto Sans JP','Hiragino Sans',sans-serif;background:#f5f0ea;color:#1a1a1a;min-height:100vh;min-height:100dvh;overflow-x:hidden}
 button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
-
-/* === Background === */
 .bg-accent{position:fixed;border-radius:50%;pointer-events:none;z-index:0}
 .bg-accent--warm{top:-20%;right:-15%;width:400px;height:400px;background:radial-gradient(circle,rgba(255,120,40,.08) 0%,transparent 70%)}
 .bg-accent--cool{bottom:-15%;left:-10%;width:350px;height:350px;background:radial-gradient(circle,rgba(40,100,200,.06) 0%,transparent 70%)}
-
-/* === Layout === */
 .container{position:relative;z-index:1;max-width:420px;margin:0 auto;padding:20px 16px;min-height:100vh;min-height:100dvh}
 .container--center{display:flex;flex-direction:column;align-items:center;justify-content:center}
-
-/* === Start Screen === */
-.logo-circle{
-  width:96px;height:96px;border-radius:50%;
-  background:linear-gradient(145deg,#ff8c32,#e06010);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 32px rgba(255,140,50,.25);margin-bottom:24px;
-}
+.logo-circle{width:96px;height:96px;border-radius:50%;background:linear-gradient(145deg,#ff8c32,#e06010);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(255,140,50,.25);margin-bottom:24px}
 .logo-circle span{font-size:48px}
-.title{
-  font-size:32px;font-weight:800;letter-spacing:2px;
-  background:linear-gradient(135deg,#e0600f,#c04000);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;color:transparent;
-}
+.title{font-size:32px;font-weight:800;letter-spacing:2px;background:linear-gradient(135deg,#e0600f,#c04000);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;color:transparent}
 .subtitle{font-size:18px;font-weight:600;color:#6b5b4f;letter-spacing:4px;margin-top:4px}
 .desc{text-align:center;color:#7a6e62;font-size:14px;line-height:1.7;margin:28px 0 36px}
-.btn-start{
-  background:linear-gradient(135deg,#ff8c32,#e05a10);color:#fff;
-  border:none;border-radius:14px;padding:16px 48px;
-  font-size:17px;font-weight:700;cursor:pointer;letter-spacing:2px;
-  box-shadow:0 6px 24px rgba(255,100,30,.3);
-  transition:transform .15s,box-shadow .15s;
-}
+.btn-start{background:linear-gradient(135deg,#ff8c32,#e05a10);color:#fff;border:none;border-radius:14px;padding:16px 48px;font-size:17px;font-weight:700;cursor:pointer;letter-spacing:2px;box-shadow:0 6px 24px rgba(255,100,30,.3);transition:transform .15s,box-shadow .15s}
 .btn-start:active{transform:scale(.96)}
-
-/* === Progress === */
 .progress-bar{width:100%;height:6px;border-radius:3px;background:rgba(0,0,0,.08);overflow:hidden;margin-bottom:12px}
 .progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#ff8c32,#ffb86c);transition:width .4s ease}
 .header-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
 .q-num{font-size:13px;font-weight:600;color:#8a7d70}
 .score-label{font-size:14px;font-weight:700;color:#d45a10;display:flex;align-items:center;gap:6px}
 .streak-badge{font-size:12px;background:rgba(255,100,30,.12);border-radius:8px;padding:2px 8px;color:#c04a00}
-
-/* === Question Card === */
-.question-card{
-  background:#ffffff;
-  border:1px solid rgba(0,0,0,.08);
-  border-radius:18px;padding:28px 20px;margin-bottom:24px;
-  box-shadow:0 2px 12px rgba(0,0,0,.06);
-}
+.question-card{background:#ffffff;border:1px solid rgba(0,0,0,.08);border-radius:18px;padding:28px 20px;margin-bottom:24px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 .question-text{font-size:16px;line-height:1.8;font-weight:600;color:#1a1a1a}
-
-/* === Answer Buttons === */
 .btn-row{display:flex;gap:14px;margin-bottom:20px}
-.btn-ans{
-  flex:1;border-radius:16px;padding:20px 12px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;gap:6px;
-  background:#ffffff;color:#1a1a1a;
-  transition:all .2s ease;
-  box-shadow:0 2px 8px rgba(0,0,0,.05);
-}
+.btn-ans{flex:1;border-radius:16px;padding:20px 12px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;background:#ffffff;color:#1a1a1a;transition:all .2s ease;box-shadow:0 2px 8px rgba(0,0,0,.05)}
 .btn-ans[disabled]{cursor:default}
 .btn-ans--maru{border:2px solid #50c878}
 .btn-ans--batsu{border:2px solid #e85050}
@@ -157,8 +46,6 @@ button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
 .btn-ans--correct{background:#e8f8ee!important;border-color:#2a9d50!important;box-shadow:0 4px 16px rgba(42,157,80,.15)}
 .btn-ans--wrong{background:#fde8e8!important;border-color:#d03030!important;box-shadow:0 4px 16px rgba(208,48,48,.15)}
 .btn-ans--dim{opacity:.35}
-
-/* === Feedback === */
 .feedback{border-radius:16px;padding:20px;margin-top:4px;animation:slideUp .3s ease}
 .feedback--correct{background:#e8f8ee;border:1px solid #b8e6c8}
 .feedback--wrong{background:#fde8e8;border:1px solid #f0c0c0}
@@ -166,22 +53,11 @@ button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
 .feedback-icon{font-size:20px}
 .feedback-title{font-size:16px;font-weight:700;color:#1a1a1a}
 .hint-text{font-size:14px;line-height:1.7;color:#3a3a3a;margin:0 0 16px}
-.btn-next{
-  width:100%;background:#f0ebe5;border:1px solid rgba(0,0,0,.1);
-  border-radius:12px;padding:14px;color:#1a1a1a;font-size:15px;font-weight:600;cursor:pointer;
-  transition:background .15s;
-}
+.btn-next{width:100%;background:#f0ebe5;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:14px;color:#1a1a1a;font-size:15px;font-weight:600;cursor:pointer;transition:background .15s}
 .btn-next:active{background:#e5ddd5}
-
-/* === Result === */
 .result-emoji{font-size:56px;margin-bottom:12px}
 .result-grade{font-size:26px;font-weight:800;color:#d45a10;margin-bottom:16px}
-.score-circle{
-  width:120px;height:120px;border-radius:50%;
-  border:3px solid rgba(212,90,16,.25);background:rgba(255,140,50,.06);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  margin-bottom:16px;
-}
+.score-circle{width:120px;height:120px;border-radius:50%;border:3px solid rgba(212,90,16,.25);background:rgba(255,140,50,.06);display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:16px}
 .score-num{font-size:42px;font-weight:800;color:#d45a10;line-height:1}
 .score-denom{font-size:14px;color:#7a6e62;font-weight:600}
 .result-msg{font-size:15px;color:#5a5048;text-align:center;margin-bottom:8px}
@@ -190,23 +66,56 @@ button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
 .review-item{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:10px;font-size:12px;font-weight:600}
 .review-item--ok{background:#e8f8ee;color:#1e7a3a}
 .review-item--ng{background:#fde8e8;color:#b02020}
-
-/* === Transitions === */
 .fade-enter{opacity:1;transition:opacity .2s ease}
 .fade-exit{opacity:0;transition:opacity .2s ease}
-
 @keyframes slideUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-
-/* === Hidden utility === */
 .hidden{display:none!important}
-const QUESTIONS = [
-{ q: “インフィールドフライが宣告された場合、ランナーはリタッチせずに進塁できる。”, a: false, hint: “インフィールドフライでもフライのルールが適用され、リタッチ義務があります。” },
-{ q: “DP（指名選手）とFLEX（守備専門選手）は試合中に役割を入れ替えることができる。”, a: true, hint: “ISF公式ルールではDP/FLEXの入れ替えが認められています。” },
-{ q: “ソフトボールでは、投手はセットポジションから両手を離した後、再度合わせてから投球してもよい。”, a: false, hint: “両手を離した時点で投球動作の開始とみなされ、再度合わせることは不正投球です。” },
-{ q: “タイブレーカー制では、前のイニングの最終打者がランナーとして二塁に置かれる。”, a: true, hint: “国際ルールでは前イニング最後の打者が二塁走者として出発します。” },
-{ q: “ソフトボールの投手板から本塁までの距離は、男子と女子で同じである。”, a: false, hint: “男子は14.02m（46フィート）、女子は13.11m（43フィート）です。” },
-{ q: “打者がバントの構えをしたが、バットを引いた場合、ストライクが宣告される。”, a: false, hint: “バントの構えを引いた場合はストライクにはなりません。ボールゾーンならボールです。” },
-{ q: “ソフトボールでは、振り逃げは第3ストライクが正規に捕球されなかった場合に発生するが、一塁にランナーがいる場合は2アウト時のみ適用される。”, a: true, hint: “0アウト・1アウトで一塁にランナーがいる場合は振り逃げ不可、2アウト時のみ可能です。” },
+</style>
+</head>
+<body>
+<div class="bg-accent bg-accent--warm"></div>
+<div class="bg-accent bg-accent--cool"></div>
+<div id="screen-start" class="container container--center">
+  <div class="logo-circle"><span>🥎</span></div>
+  <h1 class="title">ソフトボール</h1>
+  <h2 class="subtitle">上級クイズ 3</h2>
+  <p class="desc">○×形式 ・ 全10問<br>上級者向けのルール・知識問題</p>
+  <button class="btn-start" id="btn-start">スタート</button>
+</div>
+<div id="screen-quiz" class="container hidden">
+  <div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="header-info"><span class="q-num" id="q-num"></span><span class="score-label" id="score-label"></span></div>
+  </div>
+  <div class="question-card"><p class="question-text" id="question-text"></p></div>
+  <div class="btn-row">
+    <button class="btn-ans btn-ans--maru" id="btn-maru" onclick="handleAnswer(true)"><span class="symbol">○</span><span class="label">正しい</span></button>
+    <button class="btn-ans btn-ans--batsu" id="btn-batsu" onclick="handleAnswer(false)"><span class="symbol">✕</span><span class="label">誤り</span></button>
+  </div>
+  <div id="feedback" class="feedback hidden">
+    <div class="feedback-header"><span class="feedback-icon" id="fb-icon"></span><span class="feedback-title" id="fb-title"></span></div>
+    <p class="hint-text" id="fb-hint"></p>
+    <button class="btn-next" id="btn-next" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+</div>
+<div id="screen-result" class="container container--center hidden">
+  <span class="result-emoji" id="res-emoji"></span>
+  <h2 class="result-grade" id="res-grade"></h2>
+  <div class="score-circle"><span class="score-num" id="res-score"></span><span class="score-denom" id="res-denom"></span></div>
+  <p class="result-msg" id="res-msg"></p>
+  <p class="result-streak hidden" id="res-streak"></p>
+  <div class="review-wrap" id="review-wrap"></div>
+  <button class="btn-start" onclick="startQuiz()">もう一度挑戦</button>
+</div>
+<script>
+var QUESTIONS = [
+  { q: "インフィールドフライが宣告された場合、ランナーはリタッチせずに進塁できる。", a: false, hint: "インフィールドフライでもフライのルールが適用され、リタッチ義務があります。" },
+  { q: "DP（指名選手）とFLEX（守備専門選手）は試合中に役割を入れ替えることができる。", a: true, hint: "ISF公式ルールではDP/FLEXの入れ替えが認められています。" },
+  { q: "ソフトボールでは、投手はセットポジションから両手を離した後、再度合わせてから投球してもよい。", a: false, hint: "両手を離した時点で投球動作の開始とみなされ、再度合わせることは不正投球です。" },
+  { q: "タイブレーカー制では、前のイニングの最終打者がランナーとして二塁に置かれる。", a: true, hint: "国際ルールでは前イニング最後の打者が二塁走者として出発します。" },
+  { q: "ソフトボールの投手板から本塁までの距離は、男子と女子で同じである。", a: false, hint: "男子は14.02m（46フィート）、女子は13.11m（43フィート）です。" },
+  { q: "打者がバントの構えをしたが、バットを引いた場合、ストライクが宣告される。", a: false, hint: "バントの構えを引いた場合はストライクにはなりません。ボールゾーンならボールです。" },
+  { q: “ソフトボールでは、振り逃げは第3ストライクが正規に捕球されなかった場合に発生するが、一塁にランナーがいる場合は2アウト時のみ適用される。”, a: true, hint: “0アウト・1アウトで一塁にランナーがいる場合は振り逃げ不可、2アウト時のみ可能です。” },
 { q: “不正投球が宣告された場合、打者には自動的にボールが1つ加算される。”, a: true, hint: “不正投球ではボールが1つカウントされ、ランナーがいれば1つ進塁します。” },
 { q: “ソフトボールの公式球の周囲は、野球のボールよりも大きい。”, a: true, hint: “ソフトボールは約30.5cm、野球は約23cmで、ソフトボールの方が大きいです。” },
 { q: “リリースされた投球がストライクゾーンを通過していれば、投球フォームが不正でもストライクである。”, a: false, hint: “不正投球が宣告された場合、球がストライクゾーンを通過してもボールとなります。” },
@@ -275,7 +184,6 @@ const QUESTIONS = [
 { q: “ソフトボールでは、投手が自由足を投手板の後方に置いてセットポジションに入ることが認められている。”, a: true, hint: “2018年のルール改正で、自由足（非軸足）は投手板の前方・後方どちらに置いてもよいことが明確化されました。” },
 { q: “ソフトボールでは、塁上でボールデッド中に走者が塁を空過していた場合、ボールデッド中でも塁を踏み直すことができる。”, a: true, hint: “ボールデッド中であっても、走者は空過した塁に戻って触れ直すことが認められています。ただし本塁を空過した場合は試合再開後のみ可能です。” },
 { q: “ソフトボールでは、投手が投球腕の指先にテーピングをすることが認められている。”, a: false, hint: “投球腕の指先へのテーピングは禁止されています。ただし指先以外であれば肌と同じ色のテーピングやサポーターの使用は可能です。” },
-// === グラウンド寸法 ===
 { q: “ソフトボールのピッチャーズサークルの半径は2.44m（8フィート）である。”, a: true, hint: “ピッチャーズサークルは投手板を中心に半径2.44m（8フィート）の円です。男女・年代共通です。” },
 { q: “ソフトボールのバッターボックスのサイズは横0.91m×縦2.13mである。”, a: true, hint: “バッターボックスは横0.91m×縦2.13mの長方形で、男女・年代ともに共通サイズです。野球より縦長で横が狭いのが特徴です。” },
 { q: “ソフトボールの投手板（ピッチャープレート）のサイズは、野球の投手板と同じである。”, a: true, hint: “投手板は15.24cm×60.96cmの長方形で、野球と同じサイズです。” },
@@ -289,13 +197,11 @@ const QUESTIONS = [
 { q: “小学生のソフトボールの投球距離（投手板〜本塁）は、2025年から12.19mに延伸された。”, a: true, hint: “2025年のルール改正で小学生の投球距離が従来の10.67mから12.19mに延伸されました。” },
 { q: “ソフトボールの本塁から外野フェンスまでの距離は、男子と女子で同じである。”, a: false, hint: “男子は68.58m（225フィート）以上、女子は60.96m（200フィート）以上と異なります。” },
 { q: “ソフトボールのスリーフットレーンは、本塁と一塁の中間地点から一塁までの区間に設けられる。”, a: true, hint: “スリーフットレーンは本塁〜一塁間の中間地点から一塁まで、ファウル地域に幅0.91m（3フィート）で設けられます。” },
-// === ストライクゾーン改正 ===
 { q: “2018年のルール改正前、ソフトボールのストライクゾーンの上限は「脇の下」だった。”, a: true, hint: “改正前は「打ちに行く姿勢での脇の下から膝頭の上部」でしたが、2018年に「自然に構えたときのみぞおちから膝の皿の底部」に変更されました。” },
 { q: “現在のソフトボールのストライクゾーンは、ボールがホームベース上を完全に通過しなくてもストライクになる。”, a: true, hint: “2018年改正で、ホームベース上に想定される五角柱の空間のどこかをボールが通過すればストライクとなりました。改正前は完全通過が必要でした。” },
 { q: “2018年の改正で、ソフトボールのストライクゾーンの横幅（内外角）も変更された。”, a: true, hint: “改正後はボールがホームベースに「接して」いればストライクとなり、ベース上にかかっていなくてもOKになりました。横幅が実質的に広がりました。” },
 { q: “現在のソフトボールのストライクゾーンの下限は「膝頭の上部」である。”, a: false, hint: “2018年改正で下限は「膝の皿の底部」に変更されました。改正前の「膝頭の上部」より低くなっています。” },
 { q: “ソフトボールのストライクゾーンを決める基準姿勢は、「打ちに行く姿勢」である。”, a: false, hint: “2018年改正で「打ちに行く姿勢」から「自然に構えたとき（スイングする前）」に変更されました。” },
-// === 歴史・豆知識 ===
 { q: “ソフトボールの女子の投球距離は、かつては12.19m（40フィート）だった。”, a: true, hint: “女子の投球距離は2002年の国際ルール改正まで12.19m（40フィート）でしたが、現在は13.11m（43フィート）に延伸されています。” },
 { q: “ソフトボールは、元々は屋内スポーツとして誕生した。”, a: true, hint: “1887年にアメリカのシカゴで、屋内の体育館でのレクリエーションとして始まりました。当初は「インドア・ベースボール」と呼ばれていました。” },
 { q: “かつてソフトボールでは、投手のツーステップ（クローホップ）は不正投球とされていた。”, a: true, hint: “2012年のルール改正までツーステップは不正投球でしたが、現在は認められています。” },
@@ -303,224 +209,26 @@ const QUESTIONS = [
 { q: “2018年のストライクゾーン改正前は、ドロップボールがベース上で急落下してストライクゾーンを通過できなかった場合、ボールと判定されていた。”, a: true, hint: “改正前はストライクゾーンを完全に通過する必要があったため、ベース手前で落ちるドロップはボールでした。改正後はゾーンのどこかを通ればストライクです。” },
 { q: “ソフトボールの国際大会で使用される公式球の色は白色である。”, a: false, hint: “国際大会で使用される公式球は黄色（オプティックイエロー）で、縫い糸は赤色です。2002年から視認性向上のため国際大会で採用されました。” },
 { q: “ソフトボールの「ソフトボール」という名称は、最初から使われていた。”, a: false, hint: “当初は「インドア・ベースボール」「キトンボール」「ダイヤモンドボール」など様々な名称で呼ばれ、「ソフトボール」に統一されたのは1926年頃です。” },
-];// ===== SOUND ENGINE (Web Audio API) =====
-var audioCtx = null;
+];
+var audioCtx=null;
+function initAudio(){if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state===‘suspended’)audioCtx.resume()}
+function playTone(f,d,t,v){if(!audioCtx)return;var o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=t||‘sine’;o.frequency.value=f;g.gain.value=v||0.3;g.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+d);o.connect(g);g.connect(audioCtx.destination);o.start(audioCtx.currentTime);o.stop(audioCtx.currentTime+d)}
+function soundCorrect(){playTone(880,0.15,‘sine’,0.25);setTimeout(function(){playTone(1320,0.3,‘sine’,0.25)},120)}
+function soundWrong(){playTone(200,0.2,‘square’,0.15);setTimeout(function(){playTone(150,0.4,‘square’,0.15)},150)}
+function soundTap(){playTone(600,0.05,‘sine’,0.15)}
+function soundStart(){playTone(523,0.12,‘sine’,0.2);setTimeout(function(){playTone(659,0.12,‘sine’,0.2)},100);setTimeout(function(){playTone(784,0.25,‘sine’,0.2)},200)}
+function soundResult(){playTone(523,0.15,‘sine’,0.2);setTimeout(function(){playTone(659,0.15,‘sine’,0.2)},150);setTimeout(function(){playTone(784,0.15,‘sine’,0.2)},300);setTimeout(function(){playTone(1047,0.4,‘sine’,0.25)},450)}
+var TOTAL_Q=10,questions=[],idx=0,score=0,selected=null,history=[],streak=0,bestStreak=0;
+function shuffle(a){var b=a.slice();for(var i=b.length-1;i>0;i–){var j=Math.floor(Math.random()*(i+1));var t=b[i];b[i]=b[j];b[j]=t}return b}
+function $(id){return document.getElementById(id)}
+function showScreen(n){[‘screen-start’,‘screen-quiz’,‘screen-result’].forEach(function(s){$(s).classList.toggle(‘hidden’,s!==‘screen-’+n)})}
+function startQuiz(){initAudio();soundStart();questions=shuffle(QUESTIONS).slice(0,TOTAL_Q);idx=0;score=0;selected=null;history=[];streak=0;bestStreak=0;showScreen(‘quiz’);renderQuestion()}
+function renderQuestion(){var q=questions[idx];$(‘progress-fill’).style.width=((idx+1)/TOTAL_Q*100)+’%’;$(‘q-num’).textContent=‘Q’+(idx+1)+’/’+TOTAL_Q;var s=score+‘点’;if(streak>=2)s+=’ <span class="streak-badge">🔥’+streak+‘連続</span>’;$(‘score-label’).innerHTML=s;$(‘question-text’).textContent=q.q;var m=$(‘btn-maru’),b=$(‘btn-batsu’);m.disabled=false;b.disabled=false;m.className=‘btn-ans btn-ans–maru’;b.className=‘btn-ans btn-ans–batsu’;$(‘feedback’).classList.add(‘hidden’);selected=null;$(‘screen-quiz’).classList.remove(‘fade-exit’);$(‘screen-quiz’).classList.add(‘fade-enter’)}
+function handleAnswer(ans){if(selected!==null)return;initAudio();selected=ans;var q=questions[idx],correct=ans===q.a;if(correct){soundCorrect();score++;streak++}else{soundWrong();streak=0}if(streak>bestStreak)bestStreak=streak;history.push({correct:correct});var s=score+‘点’;if(streak>=2)s+=’ <span class="streak-badge">🔥’+streak+‘連続</span>’;$(‘score-label’).innerHTML=s;var m=$(‘btn-maru’),b=$(‘btn-batsu’);m.disabled=true;b.disabled=true;if(q.a===true)m.classList.add(‘btn-ans–correct’);else b.classList.add(‘btn-ans–correct’);if(!correct){if(ans===true)m.classList.add(‘btn-ans–wrong’);else b.classList.add(‘btn-ans–wrong’)}if(q.a===true)b.classList.add(‘btn-ans–dim’);else m.classList.add(‘btn-ans–dim’);var fb=$(‘feedback’);fb.classList.remove(‘hidden’,‘feedback–correct’,‘feedback–wrong’);fb.classList.add(correct?‘feedback–correct’:‘feedback–wrong’);$(‘fb-icon’).textContent=correct?‘✅’:‘❌’;$(‘fb-title’).textContent=correct?‘正解！’:‘不正解…’;$(‘fb-hint’).textContent=q.hint;$(‘btn-next’).textContent=(idx+1>=TOTAL_Q)?‘結果を見る’:‘次の問題へ →’}
+function nextQuestion(){soundTap();if(idx+1>=TOTAL_Q){showResult()}else{$(‘screen-quiz’).classList.add(‘fade-exit’);$(‘screen-quiz’).classList.remove(‘fade-enter’);setTimeout(function(){idx++;renderQuestion()},200)}}
+function showResult(){showScreen(‘result’);soundResult();var g;if(score===TOTAL_Q)g={label:‘完璧！’,emoji:‘🏆’,msg:‘ソフトボール博士！全問正解は見事です！’};else if(score>=8)g={label:‘素晴らしい！’,emoji:‘🥇’,msg:‘かなりの知識量ですね！’};else if(score>=6)g={label:‘なかなか！’,emoji:‘🥈’,msg:‘上級者として十分な実力です。’};else if(score>=4)g={label:‘まずまず’,emoji:‘🥉’,msg:‘もう少し勉強してみましょう！’};else g={label:‘要復習’,emoji:‘📖’,msg:‘ルールブックを読み直してリベンジ！’};$(‘res-emoji’).textContent=g.emoji;$(‘res-grade’).textContent=g.label;$(‘res-score’).textContent=score;$(‘res-denom’).textContent=’/ ‘+TOTAL_Q;$(‘res-msg’).textContent=g.msg;var se=$(‘res-streak’);if(bestStreak>=2){se.textContent=‘最大連続正解: 🔥’+bestStreak;se.classList.remove(‘hidden’)}else{se.classList.add(‘hidden’)}var w=$(‘review-wrap’);w.innerHTML=’’;history.forEach(function(h,i){var d=document.createElement(‘div’);d.className=‘review-item ‘+(h.correct?‘review-item–ok’:‘review-item–ng’);d.innerHTML=’<span>’+(h.correct?‘✅’:‘❌’)+’</span><span>Q’+(i+1)+’</span>’;w.appendChild(d)})}
+$(‘btn-start’).addEventListener(‘click’,startQuiz);
+</script>
 
-function initAudio() {
-if (!audioCtx) {
-audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-}
-if (audioCtx.state === ‘suspended’) {
-audioCtx.resume();
-}
-}
-
-function playTone(freq, duration, type, volume) {
-if (!audioCtx) return;
-var osc = audioCtx.createOscillator();
-var gain = audioCtx.createGain();
-osc.type = type || ‘sine’;
-osc.frequency.value = freq;
-gain.gain.value = volume || 0.3;
-gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-osc.connect(gain);
-gain.connect(audioCtx.destination);
-osc.start(audioCtx.currentTime);
-osc.stop(audioCtx.currentTime + duration);
-}
-
-function soundCorrect() {
-// ピンポン♪（明るい2音）
-playTone(880, 0.15, ‘sine’, 0.25);
-setTimeout(function() { playTone(1320, 0.3, ‘sine’, 0.25); }, 120);
-}
-
-function soundWrong() {
-// ブブー（低い2音）
-playTone(200, 0.2, ‘square’, 0.15);
-setTimeout(function() { playTone(150, 0.4, ‘square’, 0.15); }, 150);
-}
-
-function soundTap() {
-// コッ（短い軽いタップ音）
-playTone(600, 0.05, ‘sine’, 0.15);
-}
-
-function soundStart() {
-// スタート音（上昇3音）
-playTone(523, 0.12, ‘sine’, 0.2);
-setTimeout(function() { playTone(659, 0.12, ‘sine’, 0.2); }, 100);
-setTimeout(function() { playTone(784, 0.25, ‘sine’, 0.2); }, 200);
-}
-
-function soundResult() {
-// 結果発表ファンファーレ（4音）
-playTone(523, 0.15, ‘sine’, 0.2);
-setTimeout(function() { playTone(659, 0.15, ‘sine’, 0.2); }, 150);
-setTimeout(function() { playTone(784, 0.15, ‘sine’, 0.2); }, 300);
-setTimeout(function() { playTone(1047, 0.4, ‘sine’, 0.25); }, 450);
-}
-
-// ===== STATE =====
-var TOTAL_Q = 10;
-var questions = [];
-var idx = 0;
-var score = 0;
-var selected = null;
-var history = [];
-var streak = 0;
-var bestStreak = 0;
-
-// ===== UTILITIES =====
-function shuffle(arr) {
-var a = arr.slice();
-for (var i = a.length - 1; i > 0; i–) {
-var j = Math.floor(Math.random() * (i + 1));
-var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-}
-return a;
-}
-
-function $(id) { return document.getElementById(id); }
-
-function showScreen(name) {
-[‘screen-start’, ‘screen-quiz’, ‘screen-result’].forEach(function(s) {
-$(s).classList.toggle(‘hidden’, s !== ‘screen-’ + name);
-});
-}
-
-// ===== QUIZ LOGIC =====
-function startQuiz() {
-initAudio();
-soundStart();
-questions = shuffle(QUESTIONS).slice(0, TOTAL_Q);
-idx = 0; score = 0; selected = null;
-history = []; streak = 0; bestStreak = 0;
-showScreen(‘quiz’);
-renderQuestion();
-}
-
-function renderQuestion() {
-var q = questions[idx];
-$(‘progress-fill’).style.width = ((idx + 1) / TOTAL_Q * 100) + ‘%’;
-$(‘q-num’).textContent = ‘Q’ + (idx + 1) + ‘/’ + TOTAL_Q;
-
-var scoreHTML = score + ‘点’;
-if (streak >= 2) scoreHTML += ’ <span class="streak-badge">🔥’ + streak + ‘連続</span>’;
-$(‘score-label’).innerHTML = scoreHTML;
-
-$(‘question-text’).textContent = q.q;
-
-// Reset buttons
-var btnM = $(‘btn-maru’), btnB = $(‘btn-batsu’);
-btnM.disabled = false; btnB.disabled = false;
-btnM.className = ‘btn-ans btn-ans–maru’;
-btnB.className = ‘btn-ans btn-ans–batsu’;
-
-// Hide feedback
-$(‘feedback’).classList.add(‘hidden’);
-selected = null;
-
-// Fade in
-$(‘screen-quiz’).classList.remove(‘fade-exit’);
-$(‘screen-quiz’).classList.add(‘fade-enter’);
-}
-
-function handleAnswer(ans) {
-if (selected !== null) return;
-initAudio();
-selected = ans;
-var q = questions[idx];
-var correct = ans === q.a;
-
-// Play sound
-if (correct) {
-soundCorrect();
-score++; streak++;
-} else {
-soundWrong();
-streak = 0;
-}
-if (streak > bestStreak) bestStreak = streak;
-history.push({ correct: correct });
-
-// Update score display
-var scoreHTML = score + ‘点’;
-if (streak >= 2) scoreHTML += ’ <span class="streak-badge">🔥’ + streak + ‘連続</span>’;
-$(‘score-label’).innerHTML = scoreHTML;
-
-// Highlight buttons
-var btnM = $(‘btn-maru’), btnB = $(‘btn-batsu’);
-btnM.disabled = true; btnB.disabled = true;
-
-if (q.a === true) btnM.classList.add(‘btn-ans–correct’);
-else btnB.classList.add(‘btn-ans–correct’);
-
-if (!correct) {
-if (ans === true) btnM.classList.add(‘btn-ans–wrong’);
-else btnB.classList.add(‘btn-ans–wrong’);
-}
-
-// Dim non-answer
-if (q.a === true) btnB.classList.add(‘btn-ans–dim’);
-else btnM.classList.add(‘btn-ans–dim’);
-
-// Show feedback
-var fb = $(‘feedback’);
-fb.classList.remove(‘hidden’, ‘feedback–correct’, ‘feedback–wrong’);
-fb.classList.add(correct ? ‘feedback–correct’ : ‘feedback–wrong’);
-$(‘fb-icon’).textContent = correct ? ‘✅’ : ‘❌’;
-$(‘fb-title’).textContent = correct ? ‘正解！’ : ‘不正解…’;
-$(‘fb-hint’).textContent = q.hint;
-$(‘btn-next’).textContent = (idx + 1 >= TOTAL_Q) ? ‘結果を見る’ : ‘次の問題へ →’;
-}
-
-function nextQuestion() {
-soundTap();
-if (idx + 1 >= TOTAL_Q) {
-showResult();
-} else {
-$(‘screen-quiz’).classList.add(‘fade-exit’);
-$(‘screen-quiz’).classList.remove(‘fade-enter’);
-setTimeout(function() { idx++; renderQuestion(); }, 200);
-}
-}
-
-function showResult() {
-showScreen(‘result’);
-soundResult();
-
-var grade;
-if (score === TOTAL_Q) grade = { label: ‘完璧！’, emoji: ‘🏆’, msg: ‘ソフトボール博士！全問正解は見事です！’ };
-else if (score >= 8) grade = { label: ‘素晴らしい！’, emoji: ‘🥇’, msg: ‘かなりの知識量ですね！’ };
-else if (score >= 6) grade = { label: ‘なかなか！’, emoji: ‘🥈’, msg: ‘上級者として十分な実力です。’ };
-else if (score >= 4) grade = { label: ‘まずまず’, emoji: ‘🥉’, msg: ‘もう少し勉強してみましょう！’ };
-else grade = { label: ‘要復習’, emoji: ‘📖’, msg: ‘ルールブックを読み直してリベンジ！’ };
-
-$(‘res-emoji’).textContent = grade.emoji;
-$(‘res-grade’).textContent = grade.label;
-$(‘res-score’).textContent = score;
-$(‘res-denom’).textContent = ’/ ’ + TOTAL_Q;
-$(‘res-msg’).textContent = grade.msg;
-
-var streakEl = $(‘res-streak’);
-if (bestStreak >= 2) {
-streakEl.textContent = ‘最大連続正解: 🔥’ + bestStreak;
-streakEl.classList.remove(‘hidden’);
-} else {
-streakEl.classList.add(‘hidden’);
-}
-
-// Review items
-var wrap = $(‘review-wrap’);
-wrap.innerHTML = ‘’;
-history.forEach(function(h, i) {
-var div = document.createElement(‘div’);
-div.className = ’review-item ’ + (h.correct ? ‘review-item–ok’ : ‘review-item–ng’);
-div.innerHTML = ‘<span>’ + (h.correct ? ‘✅’ : ‘❌’) + ‘</span><span>Q’ + (i + 1) + ‘</span>’;
-wrap.appendChild(div);
-});
-}
-
-// ===== INIT =====
-$(‘btn-start’).addEventListener(‘click’, startQuiz);
+</body>
+</html>
