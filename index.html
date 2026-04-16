@@ -103,6 +103,21 @@ button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
 .btn-back{background:none;border:2px solid rgba(0,0,0,.12);border-radius:12px;padding:12px 32px;font-size:14px;font-weight:600;color:#6b5b4f;cursor:pointer;margin-top:8px}
 .btn-back:active{transform:scale(.96)}
 .btn-reset-stats{background:none;border:none;font-size:12px;color:#aaa;cursor:pointer;margin-top:12px;text-decoration:underline}
+
+/* AI関連 */
+.ai-btn{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:10px 16px;font-size:13px;font-weight:600;cursor:pointer;margin-top:12px;width:100%;transition:transform .15s}
+.ai-btn:active{transform:scale(.96)}
+.ai-btn:disabled{opacity:.5;cursor:default}
+.ai-btn--outline{background:none;border:2px solid #6366f1;color:#6366f1}
+.ai-btn--start{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:14px;padding:14px 36px;font-size:15px;font-weight:700;cursor:pointer;margin-top:12px;letter-spacing:1px;box-shadow:0 6px 24px rgba(99,102,241,.3)}
+.ai-response{background:#f0f0ff;border:1px solid rgba(99,102,241,.2);border-radius:12px;padding:16px;margin-top:12px;font-size:13px;line-height:1.7;color:#1a1a1a;white-space:pre-wrap}
+.ai-loading{text-align:center;color:#6366f1;font-size:13px;padding:12px}
+.ai-badge{display:inline-block;background:rgba(99,102,241,.1);color:#6366f1;font-size:11px;font-weight:600;border-radius:6px;padding:2px 8px;margin-bottom:8px}
+.api-key-section{width:100%;margin-top:16px;padding-top:16px;border-top:1px solid rgba(0,0,0,.08)}
+.api-key-row{display:flex;gap:8px;align-items:center}
+.api-key-input{flex:1;border:1px solid rgba(0,0,0,.15);border-radius:8px;padding:8px 10px;font-size:12px;font-family:inherit}
+.api-key-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:600;cursor:pointer}
+.api-key-status{font-size:11px;color:#888;margin-top:4px}
 .hidden{display:none!important}
 .fade-enter{animation:fadeIn .3s ease}
 .fade-exit{animation:fadeOut .2s ease}
@@ -153,6 +168,16 @@ button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
 
   <button class="btn-start" id="btn-start">スタート</button>
   <button class="btn-stats" id="btn-show-stats">📊 統計を見る</button>
+  <button class="ai-btn--start" id="btn-ai-quiz" onclick="startAiQuiz()">🤖 AI問題に挑戦</button>
+
+  <div class="api-key-section">
+    <div class="setting-label">🔑 Gemini APIキー</div>
+    <div class="api-key-row">
+      <input type="password" class="api-key-input" id="api-key-input" placeholder="APIキーを貼り付け">
+      <button class="api-key-btn" onclick="saveApiKey()">保存</button>
+    </div>
+    <div class="api-key-status" id="api-key-status"></div>
+  </div>
 </div>
 
 <!-- クイズ画面 -->
@@ -171,6 +196,8 @@ button{font-family:inherit;-webkit-appearance:none;appearance:none;outline:none}
     <div class="feedback hidden" id="feedback">
       <div class="fb-head"><span class="fb-icon" id="fb-icon"></span><span class="fb-title" id="fb-title"></span></div>
       <p class="fb-hint" id="fb-hint"></p>
+      <button class="ai-btn" id="btn-ai-explain" onclick="askAiExplain()" style="display:none">🤖 AIに詳しく聞く</button>
+      <div id="ai-explain-area"></div>
       <button class="btn-next" id="btn-next" onclick="nextQuestion()">次の問題へ →</button>
     </div>
   </div>
@@ -474,6 +501,132 @@ function renderStats() {
 setupChips();
 $('btn-start').addEventListener('click', startQuiz);
 $('btn-show-stats').addEventListener('click', function() { showScreen('stats'); renderStats(); });
+
+// ===== GEMINI API =====
+var API_KEY_STORAGE = 'sb_quiz_apikey';
+function getApiKey() { return localStorage.getItem(API_KEY_STORAGE) || ''; }
+function saveApiKey() {
+  var k = $('api-key-input').value.trim();
+  if (k) { localStorage.setItem(API_KEY_STORAGE, k); $('api-key-status').textContent = '✅ 保存しました'; $('api-key-input').value = ''; }
+  else { $('api-key-status').textContent = '❌ キーを入力してください'; }
+}
+function initApiKeyUI() {
+  var k = getApiKey();
+  $('api-key-status').textContent = k ? '✅ 設定済み' : '未設定（AI機能を使うには設定してください）';
+}
+
+async function callGemini(prompt) {
+  var key = getApiKey();
+  if (!key) throw new Error('APIキーが未設定。スタート画面で設定してください。');
+  var url = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + key;
+  var res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: { maxOutputTokens: 1024, temperature: 0.7 }
+    })
+  });
+  if (!res.ok) throw new Error('API error: ' + res.status);
+  var data = await res.json();
+  if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+    return data.candidates[0].content.parts[0].text;
+  }
+  throw new Error('No response');
+}
+
+// ===== AI解説深掘り =====
+function showAiButton() {
+  var key = getApiKey();
+  var btn = $('btn-ai-explain');
+  if (key && btn) btn.style.display = 'block';
+}
+
+async function askAiExplain() {
+  var q = questions[idx];
+  var area = $('ai-explain-area');
+  var btn = $('btn-ai-explain');
+  btn.disabled = true; btn.textContent = '🤖 読み込み中...';
+  area.innerHTML = '<div class="ai-loading">⏳ AIが解説を作成中...</div>';
+  try {
+    var prompt = 'あなたはソフトボールのルールに詳しい解説者です。以下の○×クイズについて、なぜその答えになるのか、背景や関連するルール改正の経緯も含めて分かりやすく解説してください。200文字程度で。\n\n問題: ' + q.q + '\n答え: ' + (q.a ? '○（正しい）' : '×（誤り）') + '\nヒント: ' + q.hint;
+    var text = await callGemini(prompt);
+    area.innerHTML = '<div class="ai-response"><div class="ai-badge">🤖 AI解説</div><br>' + text.replace(/\n/g, '<br>') + '</div>';
+  } catch(e) {
+    area.innerHTML = '<div class="ai-response" style="color:#a03030">❌ ' + e.message + '</div>';
+  }
+  btn.style.display = 'none';
+}
+
+// handleAnswer内でAIボタンを表示するためのフック
+var _origHandleAnswer = handleAnswer;
+handleAnswer = function(ans) {
+  _origHandleAnswer(ans);
+  showAiButton();
+};
+
+// ===== AI問題生成 =====
+var aiQuestions = [], aiIdx = 0, aiScore = 0, aiHistory = [];
+async function startAiQuiz() {
+  var key = getApiKey();
+  if (!key) { alert('AI機能を使うにはGemini APIキーを設定してください'); return; }
+
+  var catLabel = selCat === 'all' ? '全般' : (CAT_LABELS[selCat] || selCat);
+
+  showScreen('quiz');
+  $('progress-fill').style.width = '0%';
+  $('q-num').textContent = '準備中...';
+  $('score-label').innerHTML = '';
+  $('question-cat').innerHTML = '<span class="ai-badge">🤖 AI生成問題</span>';
+  $('question-text').textContent = 'AIが問題を生成中...⏳';
+  $('btn-maru').disabled = true; $('btn-batsu').disabled = true;
+  $('feedback').classList.add('hidden');
+
+  try {
+    var prompt = 'ソフトボールの' + catLabel + 'に関する○×クイズを5問作成してください。\n' +
+      '各問題は上級者向けの難しい内容にしてください。\n' +
+      '以下のJSON形式で返してください（JSONのみ、他のテキストは不要）:\n' +
+      '[{"q":"問題文","a":true,"hint":"解説文（50文字程度）"}]\n' +
+      'aはtrue（正しい）またはfalse（誤り）です。';
+    var text = await callGemini(prompt);
+    // JSON部分を抽出
+    var jsonMatch = text.match(/\[[\s\S]*\]/);
+    if (!jsonMatch) throw new Error('AIの応答形式が不正です');
+    aiQuestions = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(aiQuestions) || aiQuestions.length === 0) throw new Error('問題の生成に失敗しました');
+    // cat/lvを付与
+    aiQuestions.forEach(function(q) { q.cat = 'ai'; q.lv = 0; });
+
+    // AI問題モードでクイズ開始
+    questions = aiQuestions;
+    idx = 0; score = 0; selected = null; history = []; streak = 0; bestStreak = 0;
+    $('btn-maru').disabled = false; $('btn-batsu').disabled = false;
+    renderQuestion();
+  } catch(e) {
+    $('question-text').textContent = '❌ ' + e.message;
+    setTimeout(function() { showScreen('start'); }, 3000);
+  }
+}
+
+// renderQuestion内のカテゴリ表示をAI対応に
+var _origRenderQuestion = renderQuestion;
+renderQuestion = function() {
+  _origRenderQuestion();
+  var q = questions[idx];
+  if (q.cat === 'ai') {
+    $('question-cat').innerHTML = '<span class="ai-badge">🤖 AI生成問題</span>';
+  }
+  $('ai-explain-area').innerHTML = '';
+  $('btn-ai-explain').style.display = 'none';
+  $('btn-ai-explain').disabled = false;
+  $('btn-ai-explain').textContent = '🤖 AIに詳しく聞く';
+};
+
+// CAT_LABELSにai追加
+CAT_LABELS['ai'] = '🤖 AI生成';
+
+initApiKeyUI();
+
 </script>
 </body>
 </html>
